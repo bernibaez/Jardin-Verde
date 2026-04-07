@@ -6,10 +6,13 @@ import { Product } from '../context/CartContext';
 import { PWARedirect } from '../components/PWARedirect';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { InstallInstructions } from '../components/IOSInstallInstructions';
 
 export function Home() {
   const { t } = useTranslation();
   const { isInstallable, install } = usePWAInstall();
+  const [showInstallInstructions, setShowInstallInstructions] = useState(false);
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([
     {
       id: 1,
@@ -43,6 +46,24 @@ export function Home() {
     }
   ]);
   const [loading, setLoading] = useState(false);
+
+  const handleInstall = async () => {
+    // Check if running on iOS or Android
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+    
+    if (isIOS || isAndroid) {
+      setShowInstallInstructions(true);
+      return;
+    }
+    
+    const result = await install();
+    if (result.success) {
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
+    }
+  };
 
   return (
     <>
@@ -87,7 +108,7 @@ export function Home() {
                 </button>
                 {isInstallable && (
                   <button 
-                    onClick={install}
+                    onClick={handleInstall}
                     className="bg-leaf-green hover:bg-white hover:text-dark-green text-white px-8 py-4 rounded-full font-bold transition-all flex items-center gap-2 shadow-lg"
                   >
                     <Download className="h-4 w-4" />
@@ -276,6 +297,15 @@ export function Home() {
           </div>
         </div>
       </section>
+
+      {/* iOS/Android Installation Instructions Modal */}
+      {showInstallInstructions && (
+        <InstallInstructions 
+          onClose={() => setShowInstallInstructions(false)} 
+          isAndroid={/Android/.test(navigator.userAgent)}
+          onInstall={install}
+        />
+      )}
     </div>
     </>
   );
