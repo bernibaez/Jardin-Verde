@@ -12,7 +12,24 @@ export interface User {
 export const userService = {
   async getUsers(): Promise<User[]> {
     try {
-      // First get all profiles
+      console.log('Fetching users from profiles table...');
+      
+      // Try the admin view first (most efficient)
+      try {
+        const { data: adminViewData, error: adminViewError } = await supabase
+          .from('admin_users_view')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!adminViewError && adminViewData) {
+          console.log('Successfully fetched users from admin view:', adminViewData.length);
+          return adminViewData as User[];
+        }
+      } catch (viewError) {
+        console.log('Admin view not available, trying direct query...');
+      }
+
+      // Fallback: Direct query to profiles table
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('*')
@@ -23,21 +40,36 @@ export const userService = {
         throw error;
       }
 
-      // Then get emails for each user
+      console.log('Fetched profiles:', profiles.length);
+
+      // Get emails for each profile
       const usersWithEmails = await Promise.all(
         profiles.map(async (profile: any) => {
           try {
-            // Try to get user email from auth.users
+            // Try to get user email using admin API
             const { data: userData, error: userError } = await supabase.auth.admin.getUserById(profile.id);
             
-            return {
-              id: profile.id,
-              name: profile.name,
-              email: userData?.user?.email || 'N/A',
-              role: profile.role,
-              created_at: profile.created_at,
-              updated_at: profile.updated_at
-            } as User;
+            if (!userError && userData?.user?.email) {
+              return {
+                id: profile.id,
+                name: profile.name,
+                email: userData.user.email,
+                role: profile.role,
+                created_at: profile.created_at,
+                updated_at: profile.updated_at
+              } as User;
+            } else {
+              // Fallback: try to get from auth.users directly
+              const { data: authData } = await supabase.auth.getUser(profile.id);
+              return {
+                id: profile.id,
+                name: profile.name,
+                email: authData.user?.email || 'N/A',
+                role: profile.role,
+                created_at: profile.created_at,
+                updated_at: profile.updated_at
+              } as User;
+            }
           } catch (authError) {
             console.error(`Error getting email for user ${profile.id}:`, authError);
             return {
@@ -52,6 +84,7 @@ export const userService = {
         })
       );
 
+      console.log('Final users with emails:', usersWithEmails.length);
       return usersWithEmails;
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -68,14 +101,23 @@ export const userService = {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating user role:', error);
+        throw error;
+      }
       
       // Get the user email
-      const { data: userData } = await supabase.auth.admin.getUserById(userId);
+      let email = 'N/A';
+      try {
+        const { data: userData } = await supabase.auth.admin.getUserById(userId);
+        email = userData?.user?.email || 'N/A';
+      } catch (emailError) {
+        console.error('Error getting user email after role update:', emailError);
+      }
       
       return {
         ...data,
-        email: userData?.user?.email || 'N/A'
+        email
       } as User;
     } catch (error) {
       console.error('Error updating user role:', error);
@@ -91,11 +133,15 @@ export const userService = {
         .delete()
         .eq('id', userId);
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error('Error deleting profile:', profileError);
+        throw profileError;
+      }
       
       // Then try to delete the auth user (requires admin privileges)
       try {
         await supabase.auth.admin.deleteUser(userId);
+        console.log('Successfully deleted auth user:', userId);
       } catch (authError) {
         console.error('Error deleting auth user:', authError);
         // Continue even if auth deletion fails - profile is already deleted
@@ -117,7 +163,15 @@ export const userService = {
         .from('profiles')
         .select('*');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error getting user stats:', error);
+        return {
+          totalUsers: 0,
+          adminUsers: 0,
+          regularUsers: 0,
+          newUsersThisMonth: 0
+        };
+      }
       
       const users = data as User[];
       const currentMonth = new Date().getMonth();

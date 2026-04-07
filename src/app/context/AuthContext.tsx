@@ -32,30 +32,66 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const mapSupabaseUserToAppUser = (sbUser: SupabaseUser | null): User | null => {
+  const mapSupabaseUserToAppUser = async (sbUser: SupabaseUser | null): Promise<User | null> => {
     if (!sbUser) return null;
-    return {
-      id: sbUser.id,
-      name: sbUser.user_metadata.name || sbUser.email?.split('@')[0] || 'Usuario',
-      email: sbUser.email || '',
-      role: sbUser.user_metadata.role || 'user'
-    };
+    
+    try {
+      // Get user role from profiles table
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', sbUser.id)
+        .single();
+      
+      const role = profile?.role || 'user';
+      
+      return {
+        id: sbUser.id,
+        name: sbUser.user_metadata.name || sbUser.email?.split('@')[0] || 'Usuario',
+        email: sbUser.email || '',
+        role: role as 'user' | 'admin'
+      };
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      // Fallback to user_metadata
+      return {
+        id: sbUser.id,
+        name: sbUser.user_metadata.name || sbUser.email?.split('@')[0] || 'Usuario',
+        email: sbUser.email || '',
+        role: sbUser.user_metadata.role || 'user'
+      };
+    }
   };
 
   useEffect(() => {
-    // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const loadUser = async () => {
+      // Check active sessions and sets the user
+      const { data: { session } } = await supabase.auth.getSession();
       const sbUser = session?.user || null;
       setSupabaseUser(sbUser);
-      setUser(mapSupabaseUserToAppUser(sbUser));
+      
+      if (sbUser) {
+        const appUser = await mapSupabaseUserToAppUser(sbUser);
+        setUser(appUser);
+      } else {
+        setUser(null);
+      }
       setLoading(false);
-    });
+    };
+    
+    loadUser();
 
     // Listen for changes on auth state (logged in, signed out, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const sbUser = session?.user || null;
       setSupabaseUser(sbUser);
-      setUser(mapSupabaseUserToAppUser(sbUser));
+      
+      if (sbUser) {
+        const appUser = await mapSupabaseUserToAppUser(sbUser);
+        setUser(appUser);
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
 

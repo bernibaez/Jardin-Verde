@@ -9,16 +9,25 @@ CREATE TABLE IF NOT EXISTS profiles (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 2. Actualizar políticas de seguridad para profiles
+-- 2. Eliminar políticas existentes y recrearlas correctamente
 DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
 DROP POLICY IF EXISTS "Admins can view all profiles" ON profiles;
 DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
 
+-- 3. Crear políticas que funcionen correctamente con la tabla profiles
 CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Admins can view all profiles" ON profiles FOR SELECT USING (auth.jwt() ->> 'role' = 'admin');
+
+-- Política clave: Admins pueden ver todos los perfiles verificando el rol en la tabla profiles
+CREATE POLICY "Admins can view all profiles" ON profiles FOR SELECT USING (
+  EXISTS (
+    SELECT 1 FROM profiles 
+    WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+  )
+);
+
 CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
 
--- 3. Asegurarse de que el trigger para nuevos usuarios funcione correctamente
+-- 4. Asegurarse de que el trigger para nuevos usuarios funcione correctamente
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -40,18 +49,14 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- 4. Crear función para obtener email del usuario (para consultas admin)
-CREATE OR REPLACE FUNCTION get_user_email(user_id UUID)
-RETURNS TEXT
+-- 5. Función auxiliar para verificar si un usuario es admin
+CREATE OR REPLACE FUNCTION is_admin(user_id UUID)
+RETURNS BOOLEAN
 LANGUAGE sql
 SECURITY DEFINER
 AS $$
-  SELECT email FROM auth.users WHERE id = user_id;
+  SELECT role = 'admin' FROM profiles WHERE id = user_id;
 $$;
-
--- 5. Dar permisos de administrador al primer usuario (si es necesario)
--- Esto debe ejecutarse manualmente con el ID del primer usuario admin
--- UPDATE profiles SET role = 'admin' WHERE id = 'USER_UUID_HERE';
 
 -- 6. Verificar que los usuarios existentes tengan perfiles
 INSERT INTO profiles (id, name, role)
@@ -62,7 +67,7 @@ SELECT
 FROM auth.users 
 WHERE id NOT IN (SELECT id FROM profiles);
 
--- 7. Crear vista para facilitar la consulta de usuarios con emails
+-- 7. Crear vista simplificada para administradores
 CREATE OR REPLACE VIEW admin_users_view AS
 SELECT 
   p.id,
@@ -70,11 +75,25 @@ SELECT
   u.email,
   p.role,
   p.created_at,
-  p.updated_at,
-  u.last_sign_in_at
+  p.updated_at
 FROM profiles p
 JOIN auth.users u ON p.id = u.id;
 
--- 8. Dar permisos a administradores para ver la vista
+-- 8. Políticas para la vista de administradores
+DROP POLICY IF EXISTS "Admin view policy" ON admin_users_view;
+CREATE POLICY "Admin view policy" ON admin_users_view FOR SELECT USING (
+  EXISTS (
+    SELECT 1 FROM profiles 
+    WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+  )
+);
+
+-- 9. Dar permisos necesarios
 GRANT SELECT ON admin_users_view TO authenticated;
 GRANT SELECT ON admin_users_view TO service_role;
+
+-- 10. Crear primer administrador (descomenta y reemplaza el UUID)
+-- UPDATE profiles SET role = 'admin' WHERE id = 'REEMPLAZAR_CON_UUID_DEL_ADMIN';
+
+-- 11. Verificar configuración
+SELECT 'Policies configured successfully' as status;
