@@ -27,13 +27,15 @@ import {
   Mail,
   Calendar,
   Crown,
-  Filter
+  Filter,
+  Bell
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { productService } from '../../lib/services/productService';
 import { orderService, Order } from '../../lib/services/orderService';
 import { userService, User } from '../../lib/services/userService';
 import { Product } from '../context/CartContext';
+import { useNotifications, createOrderNotification } from '../context/NotificationContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
@@ -44,10 +46,13 @@ import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
+import { OrderStatusModal } from '../components/OrderStatusModal';
+import { NotificationCenter } from '../components/NotificationCenter';
 
 export function Admin() {
   const { user, isAdmin, logout, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const { addNotification } = useNotifications();
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -61,6 +66,7 @@ export function Admin() {
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [userSearchTerm, setUserSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState<'all' | 'admin' | 'customer'>('all');
+  const [isOrderStatusModalOpen, setIsOrderStatusModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -126,7 +132,7 @@ export function Admin() {
   const handleViewOrderDetails = (order: Order) => {
     setSelectedOrder(order);
     setTempStatus(order.status);
-    setIsOrderDetailsOpen(true);
+    setIsOrderStatusModalOpen(true);
   };
 
   const handleDeleteProduct = async (id: number | string) => {
@@ -183,18 +189,30 @@ export function Admin() {
   const handleUpdateOrderStatus = async (id: string, status: Order['status']) => {
     try {
       setIsUpdatingStatus(true);
-      await orderService.updateOrderStatus(id, status);
-      toast.success('Estado del pedido actualizado con éxito');
+      const updatedOrder = await orderService.updateOrderStatus(id, status);
       
-      // Actualizamos los estados locales inmediatamente
+      // Update local state
       setOrders(prevOrders => 
         prevOrders.map(order => 
           order.id === id ? { ...order, status } : order
         )
       );
       
+      // Create notification for status update
+      const notification = createOrderNotification(id, status);
+      if (notification) {
+        addNotification({
+          type: notification.type as 'success' | 'error' | 'warning' | 'info',
+          title: notification.title,
+          message: notification.message,
+          orderId: notification.orderId
+        });
+      }
+      
+      toast.success('Estado del pedido actualizado con éxito');
+      
       if (selectedOrder?.id === id) {
-        setSelectedOrder(prev => prev ? { ...prev, status } : null);
+        setSelectedOrder(updatedOrder);
         setTempStatus(status);
       }
     } catch (error) {
@@ -357,6 +375,7 @@ export function Admin() {
             <p className="text-sm text-slate-500">Gestiona productos, pedidos y más.</p>
           </div>
           <div className="flex items-center gap-3">
+            <NotificationCenter />
              <Button className="bg-emerald-600 hover:bg-emerald-700 shadow-sm shadow-emerald-200" onClick={handleOpenAddDialog}>
                <Plus className="h-4 w-4 mr-2" /> Añadir Producto
              </Button>
@@ -499,8 +518,13 @@ export function Admin() {
                             <OrderStatusCell order={order} />
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button variant="ghost" size="sm" className="text-emerald-600 hover:bg-emerald-50" onClick={() => handleViewOrderDetails(order)}>
-                              <Eye className="w-4 h-4 mr-2" /> Detalles
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-emerald-600 hover:bg-emerald-50" 
+                              onClick={() => handleViewOrderDetails(order)}
+                            >
+                              <Eye className="w-4 h-4 mr-2" /> Ver Detalles
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -665,6 +689,17 @@ export function Admin() {
           </Tabs>
         </div>
       </main>
+
+      {/* Order Status Modal */}
+      <OrderStatusModal
+        order={selectedOrder}
+        isOpen={isOrderStatusModalOpen}
+        onClose={() => {
+          setIsOrderStatusModalOpen(false);
+          setSelectedOrder(null);
+        }}
+        onUpdateStatus={handleUpdateOrderStatus}
+      />
 
       {/* Product Dialog */}
       <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
