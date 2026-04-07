@@ -32,34 +32,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const mapSupabaseUserToAppUser = async (sbUser: SupabaseUser | null): Promise<User | null> => {
+  const mapSupabaseUserToAppUser = (sbUser: SupabaseUser | null, fallbackRole?: string): User | null => {
     if (!sbUser) return null;
     
+    return {
+      id: sbUser.id,
+      name: sbUser.user_metadata.name || sbUser.email?.split('@')[0] || 'Usuario',
+      email: sbUser.email || '',
+      role: (fallbackRole || sbUser.user_metadata.role || 'user') as 'user' | 'admin'
+    };
+  };
+
+  const fetchUserRole = async (userId: string): Promise<string> => {
     try {
-      // Get user role from profiles table
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('role')
-        .eq('id', sbUser.id)
+        .eq('id', userId)
         .single();
       
-      const role = profile?.role || 'user';
-      
-      return {
-        id: sbUser.id,
-        name: sbUser.user_metadata.name || sbUser.email?.split('@')[0] || 'Usuario',
-        email: sbUser.email || '',
-        role: role as 'user' | 'admin'
-      };
+      return profile?.role || 'user';
     } catch (error) {
       console.error('Error fetching user profile:', error);
-      // Fallback to user_metadata
-      return {
-        id: sbUser.id,
-        name: sbUser.user_metadata.name || sbUser.email?.split('@')[0] || 'Usuario',
-        email: sbUser.email || '',
-        role: sbUser.user_metadata.role || 'user'
-      };
+      return 'user';
     }
   };
 
@@ -71,12 +66,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSupabaseUser(sbUser);
       
       if (sbUser) {
-        const appUser = await mapSupabaseUserToAppUser(sbUser);
-        setUser(appUser);
+        // Load user immediately with fallback role
+        const initialUser = mapSupabaseUserToAppUser(sbUser);
+        setUser(initialUser);
+        setLoading(false); // Set loading to false immediately
+        
+        // Then fetch the actual role from profiles table
+        const actualRole = await fetchUserRole(sbUser.id);
+        if (actualRole && initialUser?.role && actualRole !== initialUser.role) {
+          // Update user with correct role if different
+          const updatedUser = mapSupabaseUserToAppUser(sbUser, actualRole);
+          setUser(updatedUser);
+        }
       } else {
         setUser(null);
+        setLoading(false);
       }
-      setLoading(false);
     };
     
     loadUser();
@@ -87,8 +92,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSupabaseUser(sbUser);
       
       if (sbUser) {
-        const appUser = await mapSupabaseUserToAppUser(sbUser);
-        setUser(appUser);
+        // Load user immediately with fallback role
+        const initialUser = mapSupabaseUserToAppUser(sbUser);
+        setUser(initialUser);
+        
+        // Then fetch the actual role from profiles table
+        const actualRole = await fetchUserRole(sbUser.id);
+        if (actualRole && initialUser?.role && actualRole !== initialUser.role) {
+          // Update user with correct role if different
+          const updatedUser = mapSupabaseUserToAppUser(sbUser, actualRole);
+          setUser(updatedUser);
+        }
       } else {
         setUser(null);
       }
