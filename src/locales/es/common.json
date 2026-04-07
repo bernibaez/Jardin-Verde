@@ -9,7 +9,8 @@
     "admin": "Administración",
     "blog": "Blog",
     "login": "Iniciar Sesión",
-    "logout": "Cerrar Sesión"
+    "logout": "Cerrar Sesión",
+    "installApp": "Instalar App"
   },
   "common": {
     "loading": "Cargando...",

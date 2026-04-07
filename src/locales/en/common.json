@@ -9,7 +9,8 @@
     "admin": "Admin",
     "blog": "Blog",
     "login": "Login",
-    "logout": "Logout"
+    "logout": "Logout",
+    "installApp": "Install App"
   },
   "common": {
     "loading": "Loading...",

@@ -1,9 +1,10 @@
 import { Link, useNavigate } from 'react-router';
-import { ShoppingCart, Search, User, Menu, X, LogOut, ShoppingBag, Sprout } from 'lucide-react';
+import { ShoppingCart, Search, User, Menu, X, LogOut, ShoppingBag, Sprout, Download } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { usePWAInstall } from '../../hooks/usePWAInstall';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +18,7 @@ export function Header() {
   const { t } = useTranslation();
   const { getTotalItems } = useCart();
   const { user, logout, isAuthenticated, isAdmin } = useAuth();
+  const { isInstallable, isInstalled, install } = usePWAInstall();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const totalItems = getTotalItems();
@@ -24,6 +26,13 @@ export function Header() {
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const handleInstall = async () => {
+    const success = await install();
+    if (success) {
+      console.log('App installed successfully!');
+    }
   };
 
   return (
@@ -58,6 +67,18 @@ export function Header() {
             <button className="p-2 text-gray-600 hover:text-leaf-green transition-colors">
               <Search className="h-5 w-5" />
             </button>
+            
+            {/* PWA Install Button */}
+            {isInstallable && (
+              <button
+                onClick={handleInstall}
+                className="hidden md:flex items-center gap-2 px-4 py-2 bg-leaf-green text-white rounded-full text-sm font-bold hover:bg-dark-green transition-all shadow-md hover:shadow-lg"
+                title={t('navigation.installApp')}
+              >
+                <Download className="h-4 w-4" />
+                <span>{t('navigation.installApp')}</span>
+              </button>
+            )}
             
             <Link to="/cart" className="relative p-2 text-gray-600 hover:text-leaf-green transition-colors group">
               <ShoppingCart className="h-5 w-5" />
@@ -145,6 +166,20 @@ export function Header() {
               >
                 {t('navigation.about')}
               </Link>
+              
+              {/* PWA Install Button - Mobile */}
+              {isInstallable && (
+                <button
+                  onClick={() => {
+                    handleInstall();
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 text-lg font-bold text-leaf-green pt-6 border-t border-gray-100"
+                >
+                  <Download className="h-5 w-5" />
+                  {t('navigation.installApp')}
+                </button>
+              )}
               
               {isAuthenticated ? (
                 <div className="pt-6 border-t border-gray-100">
