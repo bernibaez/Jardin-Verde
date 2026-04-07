@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
-import { IOSInstallInstructions } from './IOSInstallInstructions';
+import { InstallInstructions } from './IOSInstallInstructions';
 import { useState } from 'react';
 
 export function MobileNavigation() {
@@ -17,10 +17,13 @@ export function MobileNavigation() {
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
 
   const handleInstall = async () => {
-    // Check if running on iOS
+    // Check if running on iOS or Android
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+    console.log('MobileNavigation handleInstall - isIOS:', isIOS, 'isAndroid:', isAndroid, 'userAgent:', navigator.userAgent);
     
-    if (isIOS) {
+    if (isIOS || isAndroid) {
+      console.log('Showing installation instructions modal in MobileNavigation');
       setShowIOSInstructions(true);
       return;
     }
@@ -94,9 +97,12 @@ export function MobileNavigation() {
         )}
       </div>
       
-      {/* iOS Installation Instructions Modal */}
+      {/* iOS/Android Installation Instructions Modal */}
       {showIOSInstructions && (
-        <IOSInstallInstructions onClose={() => setShowIOSInstructions(false)} />
+        <InstallInstructions 
+          onClose={() => setShowIOSInstructions(false)} 
+          isAndroid={/Android/.test(navigator.userAgent)}
+        />
       )}
     </div>
   );

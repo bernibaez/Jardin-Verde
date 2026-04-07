@@ -16,7 +16,10 @@ export function usePWAInstall() {
   const [pwaReady, setPwaReady] = useState(false);
 
   useEffect(() => {
+    console.log('PWA Install Hook - useEffect started');
+    
     const handleBeforeInstallPrompt = (e: Event) => {
+      console.log('beforeinstallprompt event fired');
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setIsInstallable(true);
@@ -24,6 +27,7 @@ export function usePWAInstall() {
     };
 
     const handleAppInstalled = () => {
+      console.log('appinstalled event fired');
       setIsInstalled(true);
       setIsInstallable(false);
       setDeferredPrompt(null);
@@ -32,6 +36,8 @@ export function usePWAInstall() {
 
     // Check if app is already installed
     if ('serviceWorker' in navigator) {
+      console.log('Service worker available');
+      
       // Check if running in standalone mode
       if (window.matchMedia('(display-mode: standalone)').matches) {
         setIsInstalled(true);
@@ -66,13 +72,17 @@ export function usePWAInstall() {
       // Check if PWA criteria are met for install button
       const checkPWAInstallability = async () => {
         try {
+          console.log('Checking PWA installability...');
           // Wait for service worker to be ready
           if (navigator.serviceWorker && navigator.serviceWorker.controller) {
             setPwaReady(true);
+            console.log('Service worker controller is ready');
             
             // Check if user has sufficient engagement (heuristic)
             const sessionTime = Date.now() - performance.timing.navigationStart;
             const hasMinimumEngagement = sessionTime > 5000; // 5 seconds (reduced from 30)
+            
+            console.log('Engagement check:', { sessionTime, hasMinimumEngagement });
             
             if (hasMinimumEngagement && !window.matchMedia('(display-mode: standalone)').matches && !isIOS) {
               // Fallback: show install button even if beforeinstallprompt hasn't fired
@@ -80,6 +90,8 @@ export function usePWAInstall() {
               setIsInstallable(true);
               console.log('PWA Install: PWA criteria met, showing install button as fallback');
             }
+          } else {
+            console.log('Service worker controller not ready yet');
           }
         } catch (error) {
           console.log('PWA Install: Error checking PWA criteria', error);
@@ -88,12 +100,15 @@ export function usePWAInstall() {
       
       // Check installability after service worker registration (reduced from 5000ms to 2000ms)
       setTimeout(checkPWAInstallability, 2000);
+    } else {
+      console.log('Service worker not available');
     }
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
+      console.log('PWA Install Hook - cleanup');
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
@@ -102,6 +117,7 @@ export function usePWAInstall() {
   const install = async () => {
     // Check if running on iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
     
     if (isIOS) {
       // For iOS, show instructions for manual installation
@@ -111,14 +127,47 @@ export function usePWAInstall() {
       };
     }
     
+    if (isAndroid) {
+      // For Android, try automatic installation first
+      if (deferredPrompt) {
+        try {
+          await deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          
+          if (outcome === 'accepted') {
+            setIsInstalled(true);
+            setIsInstallable(false);
+            setDeferredPrompt(null);
+            console.log('PWA Install: Android user accepted the installation');
+            return { success: true, message: '¡Gracias por instalar Jardín Verde!' };
+          } else {
+            console.log('PWA Install: Android user dismissed the installation');
+            return { success: false, message: 'Instalación cancelada. Puedes instalarla manualmente desde el menú (3 puntos) > "Instalar aplicación"' };
+          }
+        } catch (error) {
+          console.error('Error during Android PWA installation:', error);
+          return { 
+            success: false, 
+            message: 'Error en la instalación. Intenta manualmente: Menú (3 puntos) > "Instalar aplicación"' 
+          };
+        }
+      } else {
+        // No prompt available, show manual instructions
+        return { 
+          success: false, 
+          message: 'Para instalar en Android: Toca el menú (3 puntos) > "Instalar aplicación" o "Añadir a pantalla de inicio"' 
+        };
+      }
+    }
+    
+    // For other platforms/desktop
     if (!deferredPrompt) {
-      // Fallback: try to trigger installation manually for Android
+      // Fallback: try to trigger installation manually
       if (pwaReady && !isInstalled) {
         console.log('PWA Install: No prompt available, trying manual installation');
         
-        // For Android Chrome, we can try to trigger the install
+        // For other mobile devices
         if (navigator.userAgent.includes('Android') && 'serviceWorker' in navigator) {
-          // Show instructions for manual installation
           return { 
             success: false, 
             message: 'Para instalar: Toca el menú (3 puntos) > "Instalar aplicación" o "Añadir a pantalla de inicio"' 

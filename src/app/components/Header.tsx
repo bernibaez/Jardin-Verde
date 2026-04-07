@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 import { toast } from 'sonner';
-import { IOSInstallInstructions } from './IOSInstallInstructions';
+import { InstallInstructions } from './IOSInstallInstructions';
 import { useState } from 'react';
 import {
   DropdownMenu,
@@ -33,8 +33,11 @@ export function Header() {
   const handleInstall = async () => {
     // Check if running on iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+    console.log('Header handleInstall - isIOS:', isIOS, 'isAndroid:', isAndroid, 'userAgent:', navigator.userAgent);
     
-    if (isIOS) {
+    if (isIOS || isAndroid) {
+      console.log('Showing installation instructions modal');
       setShowIOSInstructions(true);
       return;
     }
@@ -88,6 +91,16 @@ export function Header() {
               >
                 <Download className="h-3 w-3" />
                 <span>Instalar para móvil</span>
+              </button>
+            )}
+            
+            {/* Test button for debugging - remove in production */}
+            {process.env.NODE_ENV === 'development' && (
+              <button
+                onClick={() => setShowIOSInstructions(true)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-red-500 text-white rounded-full text-xs font-bold hover:bg-red-600 transition-all"
+              >
+                <span>Test Modal</span>
               </button>
             )}
             
@@ -151,9 +164,12 @@ export function Header() {
         </div>
       </div>
       
-      {/* iOS Installation Instructions Modal */}
+      {/* iOS/Android Installation Instructions Modal */}
       {showIOSInstructions && (
-        <IOSInstallInstructions onClose={() => setShowIOSInstructions(false)} />
+        <InstallInstructions 
+          onClose={() => setShowIOSInstructions(false)} 
+          isAndroid={/Android/.test(navigator.userAgent)}
+        />
       )}
     </header>
   );
