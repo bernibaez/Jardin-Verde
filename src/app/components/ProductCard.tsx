@@ -18,7 +18,7 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+    <div className="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full">
       {/* Product Image */}
       <div className="aspect-square relative overflow-hidden bg-gray-50">
         <ImageWithFallback
@@ -28,31 +28,31 @@ export function ProductCard({ product }: ProductCardProps) {
         />
         
         {/* Quick Actions Overlay */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-1 sm:gap-2">
           <button
             onClick={handleAddToCart}
             disabled={product.stock === 0}
-            className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#2D5128] hover:bg-[#2D5128] hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-110"
+            className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-[#2D5128] hover:bg-[#2D5128] hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-110"
             title="Agregar al carrito"
           >
-            <ShoppingCart className="h-4 w-4" />
+            <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
           </button>
           <button
-            className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#2D5128] hover:bg-[#2D5128] hover:text-white transition-all duration-300 transform hover:scale-110"
+            className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-[#2D5128] hover:bg-[#2D5128] hover:text-white transition-all duration-300 transform hover:scale-110"
             title="Ver detalles"
           >
-            <Eye className="h-4 w-4" />
+            <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
           </button>
           <button
-            className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#2D5128] hover:bg-[#2D5128] hover:text-white transition-all duration-300 transform hover:scale-110"
+            className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-[#2D5128] hover:bg-[#2D5128] hover:text-white transition-all duration-300 transform hover:scale-110"
             title="Agregar a favoritos"
           >
-            <Heart className="h-4 w-4" />
+            <Heart className="h-3 w-3 sm:h-4 sm:w-4" />
           </button>
         </div>
 
         {/* Category Badge */}
-        <div className="absolute top-3 left-3">
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
           <Badge className="bg-[#2D5128]/90 text-white text-xs font-medium px-2 py-1 rounded-full">
             {product.category}
           </Badge>
@@ -60,7 +60,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Stock Status */}
         {product.stock !== undefined && (
-          <div className="absolute top-3 right-3">
+          <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
             <span className={`text-xs font-medium px-2 py-1 rounded-full ${
               product.stock > 0 
                 ? 'bg-green-500 text-white' 
@@ -73,7 +73,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Rating Badge */}
         {product.rating && (
-          <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1">
+          <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1">
             <Star className="h-3 w-3 text-yellow-500 fill-current" />
             <span className="text-xs font-medium text-gray-700">{product.rating}</span>
           </div>
@@ -81,9 +81,9 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
       
       {/* Product Info */}
-      <div className="p-4 space-y-3">
+      <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 group-hover:text-[#2D5128] transition-colors duration-300 line-clamp-2">
+          <h3 className="text-xs sm:text-sm font-semibold text-gray-900 group-hover:text-[#2D5128] transition-colors duration-300 line-clamp-2">
             {product.name}
           </h3>
           
@@ -92,9 +92,9 @@ export function ProductCard({ product }: ProductCardProps) {
           </p>
         </div>
         
-        <div className="flex items-center justify-between">
-          <div>
-            <span className="text-lg font-bold text-[#2D5128]">
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <span className="text-sm sm:text-lg font-bold text-[#2D5128]">
               ${product.price.toFixed(2)}
             </span>
             {product.stock && product.stock > 0 && product.stock <= 5 && (
@@ -105,10 +105,10 @@ export function ProductCard({ product }: ProductCardProps) {
           <button
             onClick={handleAddToCart}
             disabled={product.stock === 0}
-            className="bg-[#2D5128] hover:bg-[#1f3d1f] text-white p-2 rounded-lg transition-all duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
+            className="bg-[#2D5128] hover:bg-[#1f3d1f] text-white p-1.5 sm:p-2 rounded-lg transition-all duration-300 disabled:bg-gray-300 disabled:cursor-not-allowed hover:scale-105 active:scale-95 flex-shrink-0"
             title="Agregar al carrito"
           >
-            <ShoppingCart className="h-4 w-4" />
+            <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
           </button>
         </div>
       </div>

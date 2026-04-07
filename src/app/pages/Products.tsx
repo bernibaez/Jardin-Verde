@@ -52,13 +52,13 @@ export function Products() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f0f4e6] to-white">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6">
             <div>
-              <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-2">Catálogo de Productos</h1>
-              <p className="text-gray-600 text-lg">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 mb-2">Catálogo de Productos</h1>
+              <p className="text-gray-600 text-base sm:text-lg">
                 Descubre la planta perfecta para cada rincón de tu hogar
               </p>
               {productCount > 0 && (
@@ -68,7 +68,7 @@ export function Products() {
               )}
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col gap-4">
               <SearchBar 
                 products={products} 
                 onSearch={setSearchResults}
@@ -76,7 +76,7 @@ export function Products() {
               />
               
               {/* View Mode Toggle */}
-              <div className="flex bg-white rounded-lg border border-gray-200 p-1">
+              <div className="flex bg-white rounded-lg border border-gray-200 p-1 self-start">
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`p-2 rounded-md transition-colors ${
@@ -101,7 +101,7 @@ export function Products() {
         </div>
 
         {/* Filters and Controls */}
-        <div className="mb-8 space-y-4">
+        <div className="mb-6 sm:mb-8 space-y-4">
           {/* Mobile Filter Toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -111,10 +111,10 @@ export function Products() {
             Filtros y Ordenamiento
           </button>
 
-          <div className={`${showFilters ? 'block' : 'hidden'} lg:block bg-white rounded-xl border border-gray-200 p-6 space-y-6`}>
+          <div className={`${showFilters ? 'block' : 'hidden'} lg:block bg-white rounded-xl border border-gray-200 p-4 sm:p-6 space-y-4 sm:space-y-6`}>
             {/* Categories */}
             <div>
-              <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <h3 className="font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
                 <Filter className="h-4 w-4 text-[#2D5128]" />
                 Categorías
               </h3>
@@ -123,7 +123,7 @@ export function Products() {
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-all text-sm ${
                       selectedCategory === category
                         ? 'bg-[#2D5128] text-white shadow-md'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -137,7 +137,7 @@ export function Products() {
 
             {/* Sort Options */}
             <div>
-              <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <h3 className="font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
                 <ArrowUpDown className="h-4 w-4 text-[#2D5128]" />
                 Ordenar por
               </h3>
@@ -152,7 +152,7 @@ export function Products() {
                   <button
                     key={option.value}
                     onClick={() => setSortBy(option.value)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-all text-sm ${
                       sortBy === option.value
                         ? 'bg-[#2D5128] text-white shadow-md'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -168,34 +168,34 @@ export function Products() {
 
         {/* Products Display */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-32">
+          <div className="flex flex-col items-center justify-center py-20 sm:py-32">
             <div className="relative">
               <div className="absolute inset-0 bg-[#2D5128]/20 rounded-full blur-3xl"></div>
-              <Loader2 className="h-12 w-12 animate-spin text-[#2D5128] relative" />
+              <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 animate-spin text-[#2D5128] relative" />
             </div>
-            <p className="text-gray-600 font-medium mt-4">Cargando los mejores productos para ti...</p>
+            <p className="text-gray-600 font-medium mt-4 text-sm sm:text-base">Cargando los mejores productos para ti...</p>
           </div>
         ) : filteredProducts.length > 0 ? (
           <div className={
             viewMode === 'grid' 
-              ? "grid gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
-              : "space-y-4"
+              ? "grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+              : "space-y-3 sm:space-y-4"
           }>
             {filteredProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
-          <div className="py-32 text-center">
+          <div className="py-20 sm:py-32 text-center">
             <div className="max-w-md mx-auto">
-              <div className="relative inline-block mb-6">
+              <div className="relative inline-block mb-4 sm:mb-6">
                 <div className="absolute inset-0 bg-[#2D5128]/10 rounded-full blur-3xl"></div>
-                <Package className="h-20 w-20 text-[#2D5128]/30 relative" />
+                <Package className="h-16 w-16 sm:h-20 sm:w-20 text-[#2D5128]/30 relative" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
                 {searchResults.length > 0 ? 'No encontramos productos' : 'No hay productos en esta categoría'}
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">
                 {searchResults.length > 0 
                   ? 'Intenta con otros términos de búsqueda o revisa la ortografía.'
                   : 'Prueba seleccionando otra categoría o explora todos nuestros productos.'}
@@ -206,14 +206,14 @@ export function Products() {
                     setSelectedCategory('all');
                     setSearchResults([]);
                   }}
-                  className="bg-[#2D5128] hover:bg-[#1f3d1f] text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                  className="bg-[#2D5128] hover:bg-[#1f3d1f] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-colors text-sm sm:text-base"
                 >
                   Ver Todos los Productos
                 </button>
                 {searchResults.length > 0 && (
                   <button
                     onClick={() => setSearchResults([])}
-                    className="border border-[#2D5128] text-[#2D5128] hover:bg-[#2D5128] hover:text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                    className="border border-[#2D5128] text-[#2D5128] hover:bg-[#2D5128] hover:text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-colors text-sm sm:text-base"
                   >
                     Limpiar Búsqueda
                   </button>

@@ -221,14 +221,14 @@ export function Checkout() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f0f4e6] to-white py-8">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-b from-[#f0f4e6] to-white py-4 sm:py-8">
+      <div className="container mx-auto px-4 sm:px-6">
         {/* Progress Indicator */}
-        <div className="mb-12">
+        <div className="mb-8 sm:mb-12">
           <div className="max-w-3xl mx-auto">
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-4">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+              <div className="flex items-center gap-2 sm:gap-4">
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold transition-all text-xs sm:text-sm ${
                   currentStep >= 1 ? 'bg-[#2D5128] text-white' : 'bg-gray-200 text-gray-500'
                 }`}>
                   1
@@ -237,13 +237,13 @@ export function Checkout() {
                   <span className={currentStep >= 1 ? 'text-[#2D5128]' : 'text-gray-500'}>Información</span>
                 </div>
               </div>
-              <div className="flex-1 h-1 bg-gray-200 mx-4">
+              <div className="flex-1 h-1 bg-gray-200 mx-2 sm:mx-4">
                 <div className={`h-full transition-all duration-300 ${
                   currentStep >= 2 ? 'bg-[#2D5128]' : 'bg-gray-200'
                 }`} style={{ width: currentStep >= 2 ? '100%' : '0%' }}></div>
               </div>
-              <div className="flex items-center gap-4">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+              <div className="flex items-center gap-2 sm:gap-4">
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold transition-all text-xs sm:text-sm ${
                   currentStep >= 2 ? 'bg-[#2D5128] text-white' : 'bg-gray-200 text-gray-500'
                 }`}>
                   2
@@ -252,13 +252,13 @@ export function Checkout() {
                   <span className={currentStep >= 2 ? 'text-[#2D5128]' : 'text-gray-500'}>Pago</span>
                 </div>
               </div>
-              <div className="flex-1 h-1 bg-gray-200 mx-4">
+              <div className="flex-1 h-1 bg-gray-200 mx-2 sm:mx-4">
                 <div className={`h-full transition-all duration-300 ${
                   currentStep >= 3 ? 'bg-[#2D5128]' : 'bg-gray-200'
                 }`} style={{ width: currentStep >= 3 ? '100%' : '0%' }}></div>
               </div>
-              <div className="flex items-center gap-4">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+              <div className="flex items-center gap-2 sm:gap-4">
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold transition-all text-xs sm:text-sm ${
                   currentStep >= 3 ? 'bg-[#2D5128] text-white' : 'bg-gray-200 text-gray-500'
                 }`}>
                   3
@@ -272,26 +272,26 @@ export function Checkout() {
         </div>
 
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Finalizar Compra</h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-2 sm:mb-4">Finalizar Compra</h1>
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
             Completa tus datos de envío y pago para recibir tus productos de jardinería
           </p>
         </div>
 
-      <div className="grid gap-8 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3">
         {/* Checkout Form */}
         <div className="lg:col-span-2">
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Shipping Information */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-[#2D5128] to-[#1f3d1f] p-6">
-                <div className="flex items-center gap-3 text-white">
-                  <MapPin className="h-6 w-6" />
-                  <h2 className="text-2xl font-bold">Información de Envío</h2>
+              <div className="bg-gradient-to-r from-[#2D5128] to-[#1f3d1f] p-4 sm:p-6">
+                <div className="flex items-center gap-2 sm:gap-3 text-white">
+                  <MapPin className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <h2 className="text-xl sm:text-2xl font-bold">Información de Envío</h2>
                 </div>
               </div>
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="md:col-span-2">
                     <label className="mb-2 block text-sm font-semibold text-gray-700">
@@ -445,13 +445,13 @@ export function Checkout() {
 
             {/* Payment Information */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-[#2D5128] to-[#1f3d1f] p-6">
-                <div className="flex items-center gap-3 text-white">
-                  <CreditCard className="h-6 w-6" />
-                  <h2 className="text-2xl font-bold">Información de Pago</h2>
+              <div className="bg-gradient-to-r from-[#2D5128] to-[#1f3d1f] p-4 sm:p-6">
+                <div className="flex items-center gap-2 sm:gap-3 text-white">
+                  <CreditCard className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <h2 className="text-xl sm:text-2xl font-bold">Información de Pago</h2>
                 </div>
               </div>
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 <div className="grid gap-4">
                   <div>
                     <label className="mb-2 block text-sm font-semibold text-gray-700">
@@ -572,16 +572,16 @@ export function Checkout() {
             <button
               type="submit"
               disabled={isProcessing}
-              className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-[#2D5128] to-[#1f3d1f] hover:from-[#1f3d1f] hover:to-[#2D5128] text-white px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-[#2D5128] to-[#1f3d1f] hover:from-[#1f3d1f] hover:to-[#2D5128] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isProcessing ? (
                 <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
                   Procesando Pago...
                 </>
               ) : (
                 <>
-                  <Lock className="h-5 w-5" />
+                  <Lock className="h-4 w-4 sm:h-5 sm:w-5" />
                   Pagar ${totalPrice.toFixed(2)}
                 </>
               )}
@@ -591,7 +591,7 @@ export function Checkout() {
 
         {/* Order Summary */}
         <div className="lg:col-span-1">
-          <div className="sticky top-8 space-y-6">
+          <div className="sticky top-4 sm:top-8 space-y-4 sm:space-y-6">
             {/* User Profile */}
             {user && (
               <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">

@@ -52,13 +52,13 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-sm transition-all duration-300">
-      <div className="container mx-auto px-4 md:px-8">
-        <div className="flex h-16 md:h-20 items-center justify-between">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="flex h-14 sm:h-16 md:h-20 items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-leaf-green rounded-full flex items-center justify-center">
-              <Sprout className="h-4 w-4 md:h-6 md:w-6 text-white" />
+            <div className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 bg-leaf-green rounded-full flex items-center justify-center">
+              <Sprout className="h-3 w-3 sm:h-4 sm:w-4 md:h-6 md:w-6 text-white" />
             </div>
-            <span className="text-lg md:text-2xl font-bold text-dark-green">Jardín Verde</span>
+            <span className="text-sm sm:text-base md:text-lg md:text-xl font-bold text-dark-green">Jardín Verde</span>
             
             {/* PWA Install Button - Mobile only, next to header */}
             {isInstallable && (
@@ -74,7 +74,7 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-10">
+          <nav className="hidden lg:flex items-center gap-6 sm:gap-8">
             <Link to="/" className="text-sm font-semibold text-gray-700 hover:text-leaf-green transition-colors">
               {t('navigation.home')}
             </Link>
@@ -113,13 +113,13 @@ export function Header() {
           </nav>
 
           {/* Right side icons */}
-          <div className="flex items-center gap-4">
-            <button className="p-2 text-gray-600 hover:text-leaf-green transition-colors hidden md:block">
-              <Search className="h-5 w-5" />
+          <div className="flex items-center gap-2 sm:gap-4">
+            <button className="hidden sm:flex p-2 text-gray-600 hover:text-leaf-green transition-colors">
+              <Search className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
             
             <Link to="/cart" className="relative p-2 text-gray-600 hover:text-leaf-green transition-colors group">
-              <ShoppingCart className="h-5 w-5" />
+              <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
               {totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-leaf-green text-[10px] text-white">
                   {totalItems}
@@ -129,8 +129,8 @@ export function Header() {
 
             {isAuthenticated ? (
               <DropdownMenu>
-                <DropdownMenuTrigger className="hidden md:flex p-2 text-gray-600 hover:text-leaf-green transition-colors">
-                  <User className="h-5 w-5" />
+                <DropdownMenuTrigger className="hidden lg:flex p-2 text-gray-600 hover:text-leaf-green transition-colors">
+                  <User className="h-4 w-4 sm:h-5 sm:w-5" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuLabel>{t('navigation.profile')}</DropdownMenuLabel>
@@ -156,7 +156,7 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link to="/login" className="hidden md:flex items-center justify-center px-6 py-2.5 bg-leaf-green text-white rounded-full text-sm font-bold hover:bg-dark-green transition-all shadow-md hover:shadow-lg">
+              <Link to="/login" className="hidden lg:flex items-center justify-center px-4 sm:px-6 py-2 sm:py-2.5 bg-leaf-green text-white rounded-full text-sm font-bold hover:bg-dark-green transition-all shadow-md hover:shadow-lg">
                 {t('navigation.login')}
               </Link>
             )}
