@@ -4,12 +4,15 @@ import { useCart } from '../context/CartContext';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 
 export function Cart() {
-  const { cart, removeFromCart, updateQuantity, getTotalPrice } = useCart();
+  const { cart, removeFromCart, updateQuantity, getTotalPrice, clearCartTemp } = useCart();
   const totalPrice = getTotalPrice();
   const shippingCost = totalPrice > 100 ? 0 : 15;
   const finalTotal = totalPrice + shippingCost;
 
   if (cart.length === 0) {
+    // Check if there are saved items in localStorage
+    const hasSavedItems = typeof window !== 'undefined' && localStorage.getItem('jardin-verde-cart');
+    
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#f0f4e6] to-white py-16">
         <div className="container mx-auto px-4">
@@ -21,7 +24,10 @@ export function Cart() {
             <div className="space-y-4">
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900">Tu carrito está vacío</h1>
               <p className="text-lg text-gray-600 max-w-md">
-                Descubre nuestra increíble selección de productos de jardinería y transforma tu espacio en un paraíso verde
+                {hasSavedItems 
+                  ? "Tus productos están guardados y volverán a aparecer cuando los agregues nuevamente."
+                  : "Descubre nuestra increíble selección de productos de jardinería y transforma tu espacio en un paraíso verde"
+                }
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
@@ -39,6 +45,14 @@ export function Cart() {
                 Volver al Inicio
               </Link>
             </div>
+            {hasSavedItems && (
+              <div className="bg-soft-green rounded-xl p-4 mt-4">
+                <p className="text-sm text-dark-green font-medium">
+                  <strong>¡Buenas noticias!</strong> Tus productos favoritos están guardados en este dispositivo. 
+                  Cuando agregues productos al carrito, se recordarán para tu próxima visita.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -157,7 +171,7 @@ export function Cart() {
               <button
                 onClick={() => {
                   if (confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
-                    cart.forEach(item => removeFromCart(item.id));
+                    clearCartTemp();
                   }
                 }}
                 className="text-red-500 hover:text-red-600 font-medium transition-colors order-1 sm:order-2"

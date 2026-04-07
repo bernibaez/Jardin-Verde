@@ -7,7 +7,7 @@ import { orderService } from '../../lib/services/orderService';
 import { toast } from 'sonner';
 
 export function Checkout() {
-  const { cart, getTotalPrice, clearCart } = useCart();
+  const { cart, getTotalPrice, clearCartAfterOrder } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -92,7 +92,7 @@ export function Checkout() {
       setIsProcessing(false);
       setOrderComplete(true);
       setCurrentStep(4);
-      clearCart();
+      clearCartAfterOrder();
 
       toast.success('¡Pedido procesado exitosamente!');
       
