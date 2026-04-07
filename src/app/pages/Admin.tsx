@@ -65,7 +65,7 @@ export function Admin() {
   const [tempStatus, setTempStatus] = useState<Order['status'] | null>(null);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [userSearchTerm, setUserSearchTerm] = useState('');
-  const [selectedRole, setSelectedRole] = useState<'all' | 'admin' | 'customer'>('all');
+  const [selectedRole, setSelectedRole] = useState<'all' | 'admin' | 'user'>('all');
   const [isOrderStatusModalOpen, setIsOrderStatusModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -223,7 +223,7 @@ export function Admin() {
     }
   };
 
-  const handleUpdateUserRole = async (userId: string, newRole: 'admin' | 'customer') => {
+  const handleUpdateUserRole = async (userId: string, newRole: 'admin' | 'user') => {
     try {
       await userService.updateUserRole(userId, newRole);
       toast.success('Rol de usuario actualizado correctamente');
@@ -251,8 +251,8 @@ export function Admin() {
     switch (role) {
       case 'admin': 
         return <Badge className="bg-purple-50 text-purple-700 border-purple-200"><Crown className="w-3 h-3 mr-1" /> Administrador</Badge>;
-      case 'customer': 
-        return <Badge className="bg-blue-50 text-blue-700 border-blue-200"><UserCheck className="w-3 h-3 mr-1" /> Cliente</Badge>;
+      case 'user': 
+        return <Badge className="bg-blue-50 text-blue-700 border-blue-200"><UserCheck className="w-3 h-3 mr-1" /> Usuario</Badge>;
       default: 
         return <Badge>{role}</Badge>;
     }
@@ -579,13 +579,13 @@ export function Admin() {
                         Admin
                       </Button>
                       <Button
-                        variant={selectedRole === 'customer' ? 'default' : 'outline'}
+                        variant={selectedRole === 'user' ? 'default' : 'outline'}
                         size="sm"
-                        onClick={() => setSelectedRole('customer')}
+                        onClick={() => setSelectedRole('user')}
                         className="bg-blue-600 hover:bg-blue-700 text-white"
                       >
                         <UserCheck className="w-4 h-4 mr-1" />
-                        Clientes
+                        Usuarios
                       </Button>
                     </div>
                   </div>
@@ -598,7 +598,7 @@ export function Admin() {
                         <TableHead>Email</TableHead>
                         <TableHead>Rol</TableHead>
                         <TableHead>Fecha de Registro</TableHead>
-                        <TableHead>Último Acceso</TableHead>
+                        <TableHead>Última Actualización</TableHead>
                         <TableHead className="text-right">Acciones</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -639,14 +639,14 @@ export function Admin() {
                           </TableCell>
                           <TableCell>
                             <div className="text-sm text-slate-600">
-                              {userItem.last_sign_in_at 
-                                ? new Date(userItem.last_sign_in_at).toLocaleDateString()
+                              {userItem.updated_at 
+                                ? new Date(userItem.updated_at).toLocaleDateString()
                                 : 'Nunca'
                               }
                             </div>
                           </TableCell>
                           <TableCell className="text-right space-x-1">
-                            {userItem.role === 'customer' ? (
+                            {userItem.role === 'user' ? (
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
@@ -661,8 +661,8 @@ export function Admin() {
                                 variant="ghost" 
                                 size="icon" 
                                 className="text-blue-600 hover:bg-blue-50" 
-                                onClick={() => handleUpdateUserRole(userItem.id, 'customer')}
-                                title="Convertir en Cliente"
+                                onClick={() => handleUpdateUserRole(userItem.id, 'user')}
+                                title="Convertir en Usuario"
                               >
                                 <UserCheck className="w-4 h-4" />
                               </Button>
