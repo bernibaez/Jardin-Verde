@@ -69,25 +69,43 @@ export function Checkout() {
       return;
     }
 
+    if (cart.length === 0) {
+      toast.error('Tu carrito está vacío');
+      return;
+    }
+
     setIsProcessing(true);
     setCurrentStep(3);
 
     try {
+      console.log('Starting order creation...', {
+        userId: user.id,
+        itemsCount: cart.length,
+        total: totalPrice
+      });
+
       // Simulate payment processing
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // Save order to Supabase
-      await orderService.createOrder({
+      // Prepare order data
+      const orderData = {
         user_id: user.id,
         items: cart,
         total: totalPrice,
-        status: 'pending',
+        status: 'pending' as const,
         shipping_address: {
           address: formData.address,
           city: formData.city,
           zip: formData.zipCode
         }
-      });
+      };
+
+      console.log('Creating order with data:', orderData);
+
+      // Save order to Supabase
+      const createdOrder = await orderService.createOrder(orderData);
+      
+      console.log('Order created successfully:', createdOrder);
 
       setIsProcessing(false);
       setOrderComplete(true);
@@ -100,10 +118,26 @@ export function Checkout() {
       setTimeout(() => {
         navigate('/');
       }, 4000);
+
     } catch (error) {
-      console.error('Error creating order:', error);
-      toast.error('Hubo un error al procesar tu pedido. Por favor intenta de nuevo.');
+      console.error('Error processing order:', error);
       setIsProcessing(false);
+      setCurrentStep(1);
+      
+      // Detailed error handling
+      if (error instanceof Error) {
+        if (error.message.includes('duplicate key')) {
+          toast.error('Error: Pedido duplicado. Por favor intenta de nuevo.');
+        } else if (error.message.includes('foreign key')) {
+          toast.error('Error: Usuario no válido. Por favor inicia sesión nuevamente.');
+        } else if (error.message.includes('permission')) {
+          toast.error('Error: No tienes permisos para crear pedidos.');
+        } else {
+          toast.error(`Error al procesar el pedido: ${error.message}`);
+        }
+      } else {
+        toast.error('Error desconocido al procesar el pedido. Por favor contacta soporte.');
+      }
     }
   };
 

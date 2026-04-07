@@ -42,12 +42,41 @@ export function MyOrders() {
   }, [user]);
 
   const fetchOrders = async () => {
+    if (!user) {
+      console.log('No user found, skipping order fetch');
+      return;
+    }
+
     try {
       setLoading(true);
-      const data = await orderService.getUserOrders(user!.id);
+      console.log('Fetching orders for user:', user.id);
+      
+      const data = await orderService.getUserOrders(user.id);
+      console.log('Orders fetched successfully:', data.length, 'orders');
+      
       setOrders(data);
+      
+      if (data.length === 0) {
+        console.log('No orders found for user');
+      }
     } catch (error) {
       console.error('Error fetching orders:', error);
+      
+      // Detailed error handling
+      if (error instanceof Error) {
+        if (error.message.includes('permission')) {
+          toast.error('No tienes permisos para ver los pedidos');
+        } else if (error.message.includes('network')) {
+          toast.error('Error de conexión. Intenta de nuevo más tarde');
+        } else {
+          toast.error(`Error al cargar pedidos: ${error.message}`);
+        }
+      } else {
+        toast.error('Error desconocido al cargar los pedidos');
+      }
+      
+      // Set empty array to prevent UI issues
+      setOrders([]);
     } finally {
       setLoading(false);
     }
