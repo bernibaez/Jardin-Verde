@@ -47,28 +47,42 @@ export function Login() {
     setIsLoading(true);
 
     try {
-      if (isLogin) {
-        const { success, error: loginError } = await login(email, password);
-        if (success) {
-          navigate(from, { replace: true });
-        } else {
-          setError(loginError || 'Email o contraseña incorrectos');
-        }
-      } else {
-        const { success, error: regError } = await register(name, email, password);
-        if (success) {
-          if (regError) {
-            setError(regError);
-            setIsLogin(true);
-          } else {
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Tiempo de espera agotado')), 15000);
+      });
+
+      const authPromise = (async () => {
+        if (isLogin) {
+          const { success, error: loginError } = await login(email, password);
+          if (success) {
             navigate(from, { replace: true });
+          } else {
+            setError(loginError || 'Email o contraseña incorrectos');
           }
         } else {
-          setError(regError || 'Ocurrió un error en el registro');
+          const { success, error: regError } = await register(name, email, password);
+          if (success) {
+            if (regError) {
+              setError(regError);
+              setIsLogin(true);
+            } else {
+              navigate(from, { replace: true });
+            }
+          } else {
+            setError(regError || 'Ocurrió un error en el registro');
+          }
         }
-      }
+      })();
+
+      await Promise.race([authPromise, timeoutPromise]);
     } catch (err) {
-      setError('Ocurrió un error inesperado. Por favor intenta de nuevo.');
+      if (err instanceof Error && err.message === 'Tiempo de espera agotado') {
+        setError('La operación está tardando demasiado. Verifica tu conexión a internet e intenta de nuevo.');
+      } else {
+        setError('Ocurrió un error inesperado. Por favor intenta de nuevo.');
+      }
+      console.error('Login/Registration error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -216,10 +230,17 @@ export function Login() {
 
             <button
               type="submit"
-              className="w-full bg-[#2D5128] hover:bg-[#1f3d1f] text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#2D5128] hover:bg-[#1f3d1f] text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               disabled={isLoading}
             >
-              {isLoading ? 'Cargando...' : (isLogin ? 'Iniciar Sesión' : 'Registrarse')}
+              {isLoading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>{isLogin ? 'Iniciando sesión...' : 'Registrando...'}</span>
+                </>
+              ) : (
+                <span>{isLogin ? 'Iniciar Sesión' : 'Registrarse'}</span>
+              )}
             </button>
 
             <div className="text-center text-sm text-gray-600">

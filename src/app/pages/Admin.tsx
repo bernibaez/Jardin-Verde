@@ -28,7 +28,8 @@ import {
   Calendar,
   Crown,
   Filter,
-  Bell
+  Bell,
+  RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { productService } from '../../lib/services/productService';
@@ -93,17 +94,72 @@ export function Admin() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [productsData, ordersData, usersData] = await Promise.all([
+      console.log('Starting admin dashboard data fetch...');
+      
+      // Create timeout promises for each service
+      const createTimeout = (ms: number, serviceName: string) => 
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error(`${serviceName} timeout after ${ms}ms`)), ms)
+        );
+
+      // Fetch data with individual timeouts
+      const productsPromise = Promise.race([
         productService.getProducts(),
-        orderService.getOrders(),
-        userService.getUsers()
+        createTimeout(8000, 'Products')
       ]);
+
+      const ordersPromise = Promise.race([
+        orderService.getOrders(),
+        createTimeout(8000, 'Orders')
+      ]);
+
+      const usersPromise = Promise.race([
+        userService.getUsers(),
+        createTimeout(12000, 'Users') // Longer timeout for users due to complex logic
+      ]);
+
+      // Wait for all results with individual error handling
+      const results = await Promise.allSettled([
+        productsPromise,
+        ordersPromise,
+        usersPromise
+      ]);
+
+      // Process results
+      const productsData = results[0].status === 'fulfilled' ? (results[0].value as Product[]) : [];
+      const ordersData = results[1].status === 'fulfilled' ? (results[1].value as Order[]) : [];
+      const usersData = results[2].status === 'fulfilled' ? (results[2].value as User[]) : [];
+
+      // Log any errors
+      results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          const serviceNames = ['Products', 'Orders', 'Users'];
+          console.error(`Error fetching ${serviceNames[index]}:`, result.reason);
+          toast.error(`Error cargando ${serviceNames[index].toLowerCase()}`);
+        }
+      });
+
+      console.log('Data fetch results:', {
+        products: productsData.length,
+        orders: ordersData.length,
+        users: usersData.length
+      });
+
       setProducts(productsData);
       setOrders(ordersData);
       setUsers(usersData);
+      
+      if (results.some(r => r.status === 'rejected')) {
+        toast.error('Algunos datos no pudieron cargarse. La funcionalidad puede ser limitada.');
+      }
+      
     } catch (error) {
-      console.error('Error fetching data:', error);
-      toast.error('Error al cargar los datos');
+      console.error('Critical error in fetchData:', error);
+      toast.error('Error crítico cargando datos del panel');
+      // Set empty arrays to prevent UI breaking
+      setProducts([]);
+      setOrders([]);
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -376,9 +432,23 @@ export function Admin() {
           </div>
           <div className="flex items-center gap-3">
             <NotificationCenter />
-             <Button className="bg-emerald-600 hover:bg-emerald-700 shadow-sm shadow-emerald-200" onClick={handleOpenAddDialog}>
-               <Plus className="h-4 w-4 mr-2" /> Añadir Producto
-             </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={fetchData}
+              disabled={loading}
+              className="border-slate-200 hover:bg-slate-50"
+            >
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-2" />
+              )}
+              Recargar Datos
+            </Button>
+            <Button className="bg-emerald-600 hover:bg-emerald-700 shadow-sm shadow-emerald-200" onClick={handleOpenAddDialog}>
+              <Plus className="h-4 w-4 mr-2" /> Añadir Producto
+            </Button>
           </div>
         </header>
 
