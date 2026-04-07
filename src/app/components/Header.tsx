@@ -60,16 +60,15 @@ export function Header() {
             </div>
             <span className="text-sm sm:text-base md:text-lg md:text-xl font-bold text-dark-green">Jardín Verde</span>
             
-            {/* PWA Install Button - Mobile only, next to header */}
-            {isInstallable && (
-              <button
-                onClick={handleInstall}
-                className="flex md:hidden items-center gap-1 px-2 py-1 bg-leaf-green text-white rounded-full text-xs font-bold hover:bg-dark-green transition-all shadow-md hover:shadow-lg ml-2"
-                title={t('navigation.installApp')}
+            {/* My Profile Button - Mobile only, next to header */}
+            {isAuthenticated && (
+              <Link
+                to="/profile"
+                className="flex md:hidden items-center gap-1 px-3 py-1 bg-leaf-green text-white rounded-full text-[10px] font-bold hover:bg-dark-green transition-all shadow-md ml-2"
               >
-                <Download className="h-3 w-3" />
-                <span>{t('navigation.installApp')}</span>
-              </button>
+                <User className="h-3 w-3" />
+                <span>{t('navigation.profile')}</span>
+              </Link>
             )}
           </Link>
 
@@ -129,7 +128,7 @@ export function Header() {
 
             {isAuthenticated ? (
               <DropdownMenu>
-                <DropdownMenuTrigger className="hidden lg:flex p-2 text-gray-600 hover:text-leaf-green transition-colors">
+                <DropdownMenuTrigger className="flex p-2 text-gray-600 hover:text-leaf-green transition-colors">
                   <User className="h-4 w-4 sm:h-5 sm:w-5" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
@@ -156,7 +155,7 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link to="/login" className="hidden lg:flex items-center justify-center px-4 sm:px-6 py-2 sm:py-2.5 bg-leaf-green text-white rounded-full text-sm font-bold hover:bg-dark-green transition-all shadow-md hover:shadow-lg">
+              <Link to="/login" className="flex items-center justify-center px-4 sm:px-6 py-2 sm:py-2.5 bg-leaf-green text-white rounded-full text-xs sm:text-sm font-bold hover:bg-dark-green transition-all shadow-md hover:shadow-lg">
                 {t('navigation.login')}
               </Link>
             )}
@@ -169,6 +168,7 @@ export function Header() {
         <InstallInstructions 
           onClose={() => setShowIOSInstructions(false)} 
           isAndroid={/Android/.test(navigator.userAgent)}
+          onInstall={install}
         />
       )}
     </header>

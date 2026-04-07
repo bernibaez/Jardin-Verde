@@ -4,11 +4,12 @@ import { useEffect } from 'react';
 interface InstallInstructionsProps {
   onClose: () => void;
   isAndroid?: boolean;
+  onInstall?: () => void;
 }
 
-export function InstallInstructions({ onClose, isAndroid = false }: InstallInstructionsProps) {
+export function InstallInstructions({ onClose, isAndroid = false, onInstall }: InstallInstructionsProps) {
   useEffect(() => {
-    console.log('InstallInstructions component mounted');
+    console.log('InstallInstructions component mounted, isAndroid:', isAndroid);
     // Prevent body scroll when modal is open
     document.body.style.overflow = 'hidden';
     
@@ -16,7 +17,7 @@ export function InstallInstructions({ onClose, isAndroid = false }: InstallInstr
       console.log('InstallInstructions component unmounted');
       document.body.style.overflow = 'unset';
     };
-  }, []);
+  }, [isAndroid]);
 
   if (isAndroid) {
     return (
@@ -61,12 +62,19 @@ export function InstallInstructions({ onClose, isAndroid = false }: InstallInstr
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-gray-700 font-medium mb-2">
-                    Toca el botón <strong>"Instalar para móvil"</strong>
+                    Toca el botón <strong>"Instalar Ahora"</strong>
                   </p>
-                  <div className="bg-gray-100 rounded-lg p-3 flex items-center justify-center">
-                    <Download className="h-5 w-5 text-leaf-green mr-2" />
-                    <span className="text-xs font-medium">Instalar para móvil</span>
-                  </div>
+                  <button
+                    onClick={() => {
+                      console.log('Modal Install button clicked');
+                      if (onInstall) onInstall();
+                      onClose();
+                    }}
+                    className="w-full bg-[#2D5128] text-white rounded-lg py-2 px-4 flex items-center justify-center gap-2 hover:bg-[#1f3d1f] transition-colors shadow-md"
+                  >
+                    <Download className="h-4 w-4" />
+                    <span className="text-sm font-bold">Instalar Ahora</span>
+                  </button>
                 </div>
               </div>
               
@@ -75,40 +83,25 @@ export function InstallInstructions({ onClose, isAndroid = false }: InstallInstr
                   <span className="text-sm font-bold">2</span>
                 </div>
                 <p className="text-sm text-gray-700">
-                  Confirma la instalación cuando aparezca el diálogo
-                </p>
-              </div>
-              
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-leaf-green text-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-sm font-bold">3</span>
-                </div>
-                <p className="text-sm text-gray-700">
-                  ¡Listo! La app se instalará automáticamente en tu dispositivo
+                  Confirma la instalación cuando aparezca el diálogo del navegador
                 </p>
               </div>
             </div>
             
             <div className="bg-gray-50 rounded-xl p-3 mt-4">
               <p className="text-xs text-gray-700 font-medium">
-                <strong>Alternativa manual:</strong> Menú (3 puntos) &gt; "Instalar aplicación"
-              </p>
-            </div>
-            
-            <div className="bg-soft-green rounded-xl p-3">
-              <p className="text-xs text-dark-green font-medium">
-                ¡Disfruta de acceso rápido al catálogo desde tu pantalla de inicio!
+                <strong>Alternativa manual:</strong> Menú (3 puntos) &gt; "Instalar aplicación" o "Añadir a pantalla de inicio"
               </p>
             </div>
             
             <button
               onClick={() => {
-                console.log('Entendido button clicked');
+                console.log('Close button clicked');
                 onClose();
               }}
-              className="w-full py-3 bg-leaf-green text-white rounded-xl font-bold hover:bg-dark-green transition-colors mt-4"
+              className="w-full py-3 border-2 border-leaf-green text-leaf-green rounded-xl font-bold hover:bg-leaf-green hover:text-white transition-all mt-4"
             >
-              ¡Entendido!
+              Cerrar
             </button>
           </div>
         </div>
