@@ -10,7 +10,7 @@
     "blog": "Blog",
     "login": "Login",
     "logout": "Logout",
-    "installApp": "Install App"
+    "installApp": "Install Garden Verde App"
   },
   "common": {
     "loading": "Loading...",
@@ -254,6 +254,7 @@
     "uploadComplete": "Upload complete",
     "syncComplete": "Sync complete",
     "backupComplete": "Backup complete",
-    "restoreComplete": "Restore complete"
+    "restoreComplete": "Restore complete",
+    "appInstalled": "Thank you for installing Garden Verde!"
   }
 }

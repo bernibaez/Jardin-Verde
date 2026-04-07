@@ -10,7 +10,7 @@
     "blog": "Blog",
     "login": "Iniciar Sesión",
     "logout": "Cerrar Sesión",
-    "installApp": "Instalar App"
+    "installApp": "Instalar App de Jardín Verde"
   },
   "common": {
     "loading": "Cargando...",
@@ -254,6 +254,7 @@
     "uploadComplete": "Subida completada",
     "syncComplete": "Sincronización completada",
     "backupComplete": "Respaldo completado",
-    "restoreComplete": "Restauración completada"
+    "restoreComplete": "Restauración completada",
+    "appInstalled": "¡Gracias por instalar Jardín Verde!"
   }
 }
