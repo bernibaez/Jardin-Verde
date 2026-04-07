@@ -20,11 +20,19 @@ import {
   Search,
   Box,
   Upload,
-  Loader2
+  Loader2,
+  Shield,
+  UserCheck,
+  UserX,
+  Mail,
+  Calendar,
+  Crown,
+  Filter
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { productService } from '../../lib/services/productService';
 import { orderService, Order } from '../../lib/services/orderService';
+import { userService, User } from '../../lib/services/userService';
 import { Product } from '../context/CartContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -42,6 +50,7 @@ export function Admin() {
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const [isOrderDetailsOpen, setIsOrderDetailsOpen] = useState(false);
@@ -50,6 +59,8 @@ export function Admin() {
   const [isUploading, setIsUploading] = useState(false);
   const [tempStatus, setTempStatus] = useState<Order['status'] | null>(null);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [userSearchTerm, setUserSearchTerm] = useState('');
+  const [selectedRole, setSelectedRole] = useState<'all' | 'admin' | 'customer'>('all');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -76,12 +87,14 @@ export function Admin() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [productsData, ordersData] = await Promise.all([
+      const [productsData, ordersData, usersData] = await Promise.all([
         productService.getProducts(),
-        orderService.getOrders()
+        orderService.getOrders(),
+        userService.getUsers()
       ]);
       setProducts(productsData);
       setOrders(ordersData);
+      setUsers(usersData);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Error al cargar los datos');
@@ -192,6 +205,48 @@ export function Admin() {
     }
   };
 
+  const handleUpdateUserRole = async (userId: string, newRole: 'admin' | 'customer') => {
+    try {
+      await userService.updateUserRole(userId, newRole);
+      toast.success('Rol de usuario actualizado correctamente');
+      fetchData();
+    } catch (error) {
+      console.error('Error updating user role:', error);
+      toast.error('Error al actualizar el rol del usuario');
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    if (confirm(`¿Estás seguro de que quieres eliminar al usuario "${userName}"? Esta acción no se puede deshacer.`)) {
+      try {
+        await userService.deleteUser(userId);
+        toast.success('Usuario eliminado correctamente');
+        fetchData();
+      } catch (error) {
+        console.error('Error deleting user:', error);
+        toast.error('Error al eliminar el usuario');
+      }
+    }
+  };
+
+  const getRoleBadge = (role: User['role']) => {
+    switch (role) {
+      case 'admin': 
+        return <Badge className="bg-purple-50 text-purple-700 border-purple-200"><Crown className="w-3 h-3 mr-1" /> Administrador</Badge>;
+      case 'customer': 
+        return <Badge className="bg-blue-50 text-blue-700 border-blue-200"><UserCheck className="w-3 h-3 mr-1" /> Cliente</Badge>;
+      default: 
+        return <Badge>{role}</Badge>;
+    }
+  };
+
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = user.name.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+                          user.email.toLowerCase().includes(userSearchTerm.toLowerCase());
+    const matchesRole = selectedRole === 'all' || user.role === selectedRole;
+    return matchesSearch && matchesRole;
+  });
+
   const getStatusBadge = (status: Order['status']) => {
     switch (status) {
       case 'pending': return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 ring-1 ring-amber-500/10"><Clock className="w-3 h-3 mr-1" /> Pendiente</Badge>;
@@ -202,7 +257,6 @@ export function Admin() {
       default: return <Badge>{status}</Badge>;
     }
   };
-
   const OrderStatusCell = ({ order }: { order: Order }) => {
     const [localStatus, setLocalStatus] = useState<Order['status']>(order.status);
     const hasChanged = localStatus !== order.status;
@@ -237,7 +291,7 @@ export function Admin() {
     { title: 'Ventas Totales', value: `$${orders.reduce((acc, curr) => acc + (curr.status !== 'cancelled' ? curr.total : 0), 0).toFixed(2)}`, icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50' },
     { title: 'Pedidos', value: orders.length, icon: ShoppingBag, color: 'text-blue-600', bg: 'bg-blue-50' },
     { title: 'Productos', value: products.length, icon: Package, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { title: 'Clientes', value: new Set(orders.map(o => o.user_id)).size, icon: Users, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { title: 'Usuarios', value: users.length, icon: Users, color: 'text-purple-600', bg: 'bg-purple-50' },
   ];
 
   if (authLoading || !isAdmin) {
@@ -334,6 +388,9 @@ export function Admin() {
               </TabsTrigger>
               <TabsTrigger value="orders" className="rounded-lg data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-700">
                 <ShoppingBag className="w-4 h-4 mr-2" /> Gestión de Pedidos
+              </TabsTrigger>
+              <TabsTrigger value="users" className="rounded-lg data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-700">
+                <Users className="w-4 h-4 mr-2" /> Gestión de Usuarios
               </TabsTrigger>
             </TabsList>
 
@@ -445,6 +502,158 @@ export function Admin() {
                             <Button variant="ghost" size="sm" className="text-emerald-600 hover:bg-emerald-50" onClick={() => handleViewOrderDetails(order)}>
                               <Eye className="w-4 h-4 mr-2" /> Detalles
                             </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="users">
+              <Card className="border-none shadow-sm overflow-hidden">
+                <CardHeader className="bg-white border-b border-slate-100">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                      <CardTitle>Gestión de Usuarios</CardTitle>
+                      <CardDescription>Visualiza y gestiona todos los usuarios registrados en la plataforma.</CardDescription>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <Users className="w-4 h-4" />
+                      <span className="font-medium">{users.length} usuarios totales</span>
+                    </div>
+                  </div>
+                  
+                  {/* Search and Filter Controls */}
+                  <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                    <div className="flex-1 relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                      <Input
+                        placeholder="Buscar por nombre o email..."
+                        value={userSearchTerm}
+                        onChange={(e) => setUserSearchTerm(e.target.value)}
+                        className="pl-10 bg-slate-50 border-slate-200 focus-visible:ring-emerald-500"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant={selectedRole === 'all' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedRole('all')}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                      >
+                        Todos
+                      </Button>
+                      <Button
+                        variant={selectedRole === 'admin' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedRole('admin')}
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                      >
+                        <Crown className="w-4 h-4 mr-1" />
+                        Admin
+                      </Button>
+                      <Button
+                        variant={selectedRole === 'customer' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedRole('customer')}
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        <UserCheck className="w-4 h-4 mr-1" />
+                        Clientes
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader className="bg-slate-50/50">
+                      <TableRow>
+                        <TableHead>Usuario</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Rol</TableHead>
+                        <TableHead>Fecha de Registro</TableHead>
+                        <TableHead>Último Acceso</TableHead>
+                        <TableHead className="text-right">Acciones</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {loading ? (
+                        <TableRow><TableCell colSpan={6} className="text-center py-12">Cargando usuarios...</TableCell></TableRow>
+                      ) : filteredUsers.length === 0 ? (
+                        <TableRow><TableCell colSpan={6} className="text-center py-12 text-slate-500">
+                          {users.length === 0 ? 'No hay usuarios registrados.' : 'No se encontraron usuarios con los filtros aplicados.'}
+                        </TableCell></TableRow>
+                      ) : filteredUsers.map((userItem) => (
+                        <TableRow key={userItem.id} className="hover:bg-slate-50/50 transition-colors">
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white font-bold text-sm uppercase shadow-lg">
+                                {userItem.name?.substring(0, 2) || 'U'}
+                              </div>
+                              <div>
+                                <div className="font-semibold text-slate-800">{userItem.name}</div>
+                                <div className="text-xs text-slate-500">ID: {userItem.id.substring(0, 8)}</div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Mail className="w-4 h-4 text-slate-400" />
+                              <span className="text-slate-700">{userItem.email}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {getRoleBadge(userItem.role)}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2 text-slate-600">
+                              <Calendar className="w-4 h-4 text-slate-400" />
+                              <span className="text-sm">{new Date(userItem.created_at).toLocaleDateString()}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm text-slate-600">
+                              {userItem.last_sign_in_at 
+                                ? new Date(userItem.last_sign_in_at).toLocaleDateString()
+                                : 'Nunca'
+                              }
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right space-x-1">
+                            {userItem.role === 'customer' ? (
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="text-purple-600 hover:bg-purple-50" 
+                                onClick={() => handleUpdateUserRole(userItem.id, 'admin')}
+                                title="Convertir en Administrador"
+                              >
+                                <Crown className="w-4 h-4" />
+                              </Button>
+                            ) : (
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="text-blue-600 hover:bg-blue-50" 
+                                onClick={() => handleUpdateUserRole(userItem.id, 'customer')}
+                                title="Convertir en Cliente"
+                              >
+                                <UserCheck className="w-4 h-4" />
+                              </Button>
+                            )}
+                            {userItem.id !== user?.id && (
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="text-rose-600 hover:bg-rose-50" 
+                                onClick={() => handleDeleteUser(userItem.id, userItem.name)}
+                                title="Eliminar Usuario"
+                              >
+                                <UserX className="w-4 h-4" />
+                              </Button>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
