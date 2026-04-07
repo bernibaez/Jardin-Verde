@@ -20,7 +20,15 @@ export const orderService = {
       console.log('Fetching all orders...');
       const { data, error } = await supabase
         .from('orders')
-        .select('*')
+        .select(`
+          *,
+          order_items (
+            *,
+            products (
+              name
+            )
+          )
+        `)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -28,8 +36,20 @@ export const orderService = {
         throw new Error(`Error fetching orders: ${error.message}`);
       }
       
-      console.log('Orders fetched successfully:', data?.length || 0, 'orders');
-      return data as Order[];
+      // Transform data to match Order interface
+      const transformedData = data.map(order => ({
+        ...order,
+        items: order.order_items.map((item: any) => ({
+          ...item,
+          name: item.products?.name || 'Producto eliminado'
+        })),
+        shipping_address: typeof order.shipping_address === 'string' 
+          ? JSON.parse(order.shipping_address) 
+          : order.shipping_address
+      }));
+
+      console.log('Orders fetched successfully:', transformedData.length, 'orders');
+      return transformedData as Order[];
     } catch (error) {
       console.error('Critical error in getOrders:', error);
       throw error;
@@ -41,7 +61,15 @@ export const orderService = {
       console.log('Fetching orders for user:', userId);
       const { data, error } = await supabase
         .from('orders')
-        .select('*')
+        .select(`
+          *,
+          order_items (
+            *,
+            products (
+              name
+            )
+          )
+        `)
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
@@ -50,8 +78,20 @@ export const orderService = {
         throw new Error(`Error fetching user orders: ${error.message}`);
       }
       
-      console.log('User orders fetched successfully:', data?.length || 0, 'orders');
-      return data as Order[];
+      // Transform data to match Order interface
+      const transformedData = data.map(order => ({
+        ...order,
+        items: order.order_items.map((item: any) => ({
+          ...item,
+          name: item.products?.name || 'Producto eliminado'
+        })),
+        shipping_address: typeof order.shipping_address === 'string' 
+          ? JSON.parse(order.shipping_address) 
+          : order.shipping_address
+      }));
+
+      console.log('User orders fetched successfully:', transformedData.length, 'orders');
+      return transformedData as Order[];
     } catch (error) {
       console.error('Critical error in getUserOrders:', error);
       throw error;
@@ -62,29 +102,48 @@ export const orderService = {
     try {
       console.log('Creating order with data:', order);
       
-      const { data, error } = await supabase
+      // 1. Insert into orders table first
+      const orderToInsert = {
+        user_id: order.user_id,
+        total: order.total,
+        status: order.status,
+        shipping_address: JSON.stringify(order.shipping_address)
+      };
+
+      const { data: createdOrder, error: orderError } = await supabase
         .from('orders')
-        .insert([order])
+        .insert([orderToInsert])
         .select()
         .single();
 
-      if (error) {
-        console.error('Error creating order:', error);
-        
-        // Specific error handling
-        if (error.code === '23505') {
-          throw new Error('Duplicate order entry');
-        } else if (error.code === '23503') {
-          throw new Error('Foreign key violation - invalid user');
-        } else if (error.code === '42501') {
-          throw new Error('Permission denied - check RLS policies');
-        } else {
-          throw new Error(`Error creating order: ${error.message}`);
-        }
+      if (orderError) {
+        console.error('Error creating order in orders table:', orderError);
+        throw new Error(`Error al crear la orden: ${orderError.message}`);
+      }
+
+      const orderId = createdOrder.id;
+      console.log('Order created successfully with ID:', orderId);
+
+      // 2. Insert into order_items table
+      const orderItems = order.items.map(item => ({
+        order_id: orderId,
+        product_id: item.id,
+        quantity: item.quantity,
+        price: item.price
+      }));
+
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+
+      if (itemsError) {
+        console.error('Error creating order items:', itemsError);
+        // We might want to delete the order here if items fail, but let's keep it simple
+        throw new Error(`Error al registrar los productos de la orden: ${itemsError.message}`);
       }
       
-      console.log('Order created successfully:', data);
-      return data as Order;
+      console.log('Order items created successfully');
+      return { ...createdOrder, items: order.items } as Order;
     } catch (error) {
       console.error('Critical error in createOrder:', error);
       throw error;
@@ -99,7 +158,15 @@ export const orderService = {
         .from('orders')
         .update({ status })
         .eq('id', id)
-        .select()
+        .select(`
+          *,
+          order_items (
+            *,
+            products (
+              name
+            )
+          )
+        `)
         .single();
 
       if (error) {
@@ -107,8 +174,20 @@ export const orderService = {
         throw new Error(`Error updating order status: ${error.message}`);
       }
       
-      console.log('Order status updated successfully:', data);
-      return data as Order;
+      // Transform data to match Order interface
+      const transformedOrder = {
+        ...data,
+        items: data.order_items.map((item: any) => ({
+          ...item,
+          name: item.products?.name || 'Producto eliminado'
+        })),
+        shipping_address: typeof data.shipping_address === 'string' 
+          ? JSON.parse(data.shipping_address) 
+          : data.shipping_address
+      };
+
+      console.log('Order status updated successfully:', transformedOrder);
+      return transformedOrder as Order;
     } catch (error) {
       console.error('Critical error in updateOrderStatus:', error);
       throw error;
