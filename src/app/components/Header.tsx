@@ -5,6 +5,8 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 import { toast } from 'sonner';
+import { IOSInstallInstructions } from './IOSInstallInstructions';
+import { useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +23,7 @@ export function Header() {
   const { isInstallable, isInstalled, install } = usePWAInstall();
   const navigate = useNavigate();
   const totalItems = getTotalItems();
+  const [showIOSInstructions, setShowIOSInstructions] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -28,6 +31,14 @@ export function Header() {
   };
 
   const handleInstall = async () => {
+    // Check if running on iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    
+    if (isIOS) {
+      setShowIOSInstructions(true);
+      return;
+    }
+    
     const result = await install();
     if (result.success) {
       toast.success(result.message);
@@ -139,6 +150,11 @@ export function Header() {
           </div>
         </div>
       </div>
+      
+      {/* iOS Installation Instructions Modal */}
+      {showIOSInstructions && (
+        <IOSInstallInstructions onClose={() => setShowIOSInstructions(false)} />
+      )}
     </header>
   );
 }

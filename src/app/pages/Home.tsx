@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Loader2, Search, MapPin, Filter, Leaf, Users, ShoppingCart } from 'lucide-react';
 import { ProductCard } from '../components/ProductCard';
 import { Product } from '../context/CartContext';
+import { PWARedirect } from '../components/PWARedirect';
 
 export function Home() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([
@@ -40,7 +41,9 @@ export function Home() {
   const [loading, setLoading] = useState(false);
 
   return (
-    <div className="min-h-screen bg-white">
+    <>
+      <PWARedirect />
+      <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center pt-20 pb-32 overflow-hidden">
         {/* Background Image with Overlay */}
@@ -261,5 +264,6 @@ export function Home() {
         </div>
       </section>
     </div>
+    </>
   );
 }

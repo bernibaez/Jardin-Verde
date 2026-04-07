@@ -40,16 +40,25 @@ export function usePWAInstall() {
       
       // Immediate fallback for mobile devices
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
       const isHTTPS = location.protocol === 'https:' || location.hostname === 'localhost';
       
       console.log('PWA Install Debug:', {
         isMobile,
+        isIOS,
         isHTTPS,
         isStandalone: window.matchMedia('(display-mode: standalone)').matches,
         userAgent: navigator.userAgent
       });
       
-      if (isMobile && isHTTPS && !window.matchMedia('(display-mode: standalone)').matches) {
+      // For iOS, always show install button if not installed and serving over HTTPS
+      if (isIOS && isHTTPS && !window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('PWA Install: iOS device detected, showing install button');
+        setIsInstallable(true);
+      }
+      
+      // For Android, show install button if HTTPS and not installed
+      else if (isMobile && isHTTPS && !window.matchMedia('(display-mode: standalone)').matches) {
         console.log('PWA Install: Mobile device detected, showing install button immediately');
         setIsInstallable(true);
       }
@@ -65,7 +74,7 @@ export function usePWAInstall() {
             const sessionTime = Date.now() - performance.timing.navigationStart;
             const hasMinimumEngagement = sessionTime > 5000; // 5 seconds (reduced from 30)
             
-            if (hasMinimumEngagement && !window.matchMedia('(display-mode: standalone)').matches) {
+            if (hasMinimumEngagement && !window.matchMedia('(display-mode: standalone)').matches && !isIOS) {
               // Fallback: show install button even if beforeinstallprompt hasn't fired
               // Some browsers may not fire the event reliably
               setIsInstallable(true);
@@ -91,8 +100,19 @@ export function usePWAInstall() {
   }, []);
 
   const install = async () => {
+    // Check if running on iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    
+    if (isIOS) {
+      // For iOS, show instructions for manual installation
+      return { 
+        success: false, 
+        message: 'Para instalar en iOS: Toca el botón Compartir (cuadro con flecha) en Safari > "Añadir a pantalla de inicio"' 
+      };
+    }
+    
     if (!deferredPrompt) {
-      // Fallback: try to trigger installation manually
+      // Fallback: try to trigger installation manually for Android
       if (pwaReady && !isInstalled) {
         console.log('PWA Install: No prompt available, trying manual installation');
         
@@ -101,20 +121,12 @@ export function usePWAInstall() {
           // Show instructions for manual installation
           return { 
             success: false, 
-            message: 'To install: Tap the menu button (3 dots) > "Add to Home screen"' 
-          };
-        }
-        
-        // For iOS, we need to show instructions
-        if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
-          return { 
-            success: false, 
-            message: 'To install: Tap Share button > "Add to Home Screen"' 
+            message: 'Para instalar: Toca el menú (3 puntos) > "Instalar aplicación" o "Añadir a pantalla de inicio"' 
           };
         }
       }
       
-      return { success: false, message: 'Installation not available yet. Please try again later.' };
+      return { success: false, message: 'Instalación no disponible aún. Intenta de nuevo más tarde.' };
     }
 
     try {
@@ -132,11 +144,11 @@ export function usePWAInstall() {
         return { success: true, message: '¡Gracias por instalar Jardín Verde!' };
       } else {
         console.log('PWA Install: User dismissed the installation');
-        return { success: false, message: 'Installation cancelled' };
+        return { success: false, message: 'Instalación cancelada' };
       }
     } catch (error) {
       console.error('Error during PWA installation:', error);
-      return { success: false, message: 'Installation failed' };
+      return { success: false, message: 'Error en la instalación' };
     }
   };
 

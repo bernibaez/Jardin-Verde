@@ -4,6 +4,8 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
+import { IOSInstallInstructions } from './IOSInstallInstructions';
+import { useState } from 'react';
 
 export function MobileNavigation() {
   const { t } = useTranslation();
@@ -12,8 +14,17 @@ export function MobileNavigation() {
   const { isInstallable, install } = usePWAInstall();
   const location = useLocation();
   const totalItems = getTotalItems();
+  const [showIOSInstructions, setShowIOSInstructions] = useState(false);
 
   const handleInstall = async () => {
+    // Check if running on iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    
+    if (isIOS) {
+      setShowIOSInstructions(true);
+      return;
+    }
+    
     const result = await install();
     if (result.success) {
       // Toast is handled in Header component
@@ -82,6 +93,11 @@ export function MobileNavigation() {
           </Link>
         )}
       </div>
+      
+      {/* iOS Installation Instructions Modal */}
+      {showIOSInstructions && (
+        <IOSInstallInstructions onClose={() => setShowIOSInstructions(false)} />
+      )}
     </div>
   );
 }
