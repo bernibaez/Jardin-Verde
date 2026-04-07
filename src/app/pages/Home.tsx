@@ -1,11 +1,15 @@
 import { Link } from 'react-router';
 import { useState } from 'react';
-import { Loader2, Search, MapPin, Filter, Leaf, Users, ShoppingCart } from 'lucide-react';
+import { Loader2, Search, MapPin, Filter, Leaf, Users, ShoppingCart, Download } from 'lucide-react';
 import { ProductCard } from '../components/ProductCard';
 import { Product } from '../context/CartContext';
 import { PWARedirect } from '../components/PWARedirect';
+import { usePWAInstall } from '../../hooks/usePWAInstall';
+import { useTranslation } from 'react-i18next';
 
 export function Home() {
+  const { t } = useTranslation();
+  const { isInstallable, install } = usePWAInstall();
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([
     {
       id: 1,
@@ -81,6 +85,15 @@ export function Home() {
                   </div>
                   Ver Proyectos
                 </button>
+                {isInstallable && (
+                  <button 
+                    onClick={install}
+                    className="bg-leaf-green hover:bg-white hover:text-dark-green text-white px-8 py-4 rounded-full font-bold transition-all flex items-center gap-2 shadow-lg"
+                  >
+                    <Download className="h-4 w-4" />
+                    Descargar App
+                  </button>
+                )}
                 <Link 
                   to="/login"
                   className="bg-transparent hover:bg-white hover:text-dark-green text-white px-6 py-4 rounded-full font-bold transition-all border-2 border-white flex items-center gap-2"
