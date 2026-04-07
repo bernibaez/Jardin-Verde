@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Test - Jardín Verde</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #0A2A1A;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #1a3a2a;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test de PWA - Jardín Verde</h1>
+    
+    <div id="status-container"></div>
+    
+    <button onclick="testPWA()">Verificar estado de PWA</button>
+    <button onclick="testInstall()">Probar instalación</button>
+    
+    <script>
+        function addStatus(message, type = 'info') {
+            const container = document.getElementById('status-container');
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = message;
+            container.appendChild(div);
+        }
+        
+        function testPWA() {
+            addStatus('Verificando estado de PWA...', 'info');
+            
+            // Check HTTPS
+            const isHTTPS = location.protocol === 'https:' || location.hostname === 'localhost';
+            addStatus(`HTTPS: ${isHTTPS ? 'Sí' : 'No'}`, isHTTPS ? 'success' : 'error');
+            
+            // Check Service Worker
+            if ('serviceWorker' in navigator) {
+                addStatus('Service Worker: Soportado', 'success');
+                navigator.serviceWorker.getRegistration().then(registration => {
+                    if (registration) {
+                        addStatus('Service Worker: Registrado', 'success');
+                        addStatus(`Scope: ${registration.scope}`, 'info');
+                    } else {
+                        addStatus('Service Worker: No registrado', 'error');
+                    }
+                });
+            } else {
+                addStatus('Service Worker: No soportado', 'error');
+            }
+            
+            // Check Manifest
+            if ('onbeforeinstallprompt' in window) {
+                addStatus('Evento beforeinstallprompt: Soportado', 'success');
+            } else {
+                addStatus('Evento beforeinstallprompt: No soportado', 'error');
+            }
+            
+            // Check if already installed
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                addStatus('App: Ya instalada (modo standalone)', 'success');
+            } else {
+                addStatus('App: No instalada', 'info');
+            }
+            
+            // Check mobile device
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            addStatus(`Dispositivo móvil: ${isMobile ? 'Sí' : 'No'}`, 'info');
+        }
+        
+        let deferredPrompt = null;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            addStatus('Evento beforeinstallprompt recibido', 'success');
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            addStatus('App instalada exitosamente', 'success');
+        });
+        
+        function testInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        addStatus('Usuario aceptó la instalación', 'success');
+                    } else {
+                        addStatus('Usuario canceló la instalación', 'info');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                addStatus('No hay prompt de instalación disponible', 'error');
+                addStatus('Prueba: Abre la app en un navegador móvil compatible con PWA', 'info');
+            }
+        }
+        
+        // Auto-test on load
+        setTimeout(testPWA, 1000);
+    </script>
+</body>
+</html>

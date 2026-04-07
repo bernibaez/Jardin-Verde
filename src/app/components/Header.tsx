@@ -45,6 +45,18 @@ export function Header() {
               <Sprout className="h-4 w-4 md:h-6 md:w-6 text-white" />
             </div>
             <span className="text-lg md:text-2xl font-bold text-dark-green">Jardín Verde</span>
+            
+            {/* PWA Install Button - Mobile only, next to header */}
+            {isInstallable && (
+              <button
+                onClick={handleInstall}
+                className="flex md:hidden items-center gap-1 px-2 py-1 bg-leaf-green text-white rounded-full text-xs font-bold hover:bg-dark-green transition-all shadow-md hover:shadow-lg ml-2"
+                title={t('navigation.installApp')}
+              >
+                <Download className="h-3 w-3" />
+                <span>{t('navigation.installApp')}</span>
+              </button>
+            )}
           </Link>
 
           {/* Desktop Navigation */}
@@ -55,6 +67,19 @@ export function Header() {
             <Link to="/products" className="text-sm font-semibold text-gray-700 hover:text-leaf-green transition-colors">
               {t('navigation.products')}
             </Link>
+            
+            {/* PWA Install Button - Desktop, next to products */}
+            {isInstallable && (
+              <button
+                onClick={handleInstall}
+                className="flex items-center gap-2 px-3 py-1.5 bg-leaf-green text-white rounded-full text-xs font-bold hover:bg-dark-green transition-all shadow-md hover:shadow-lg"
+                title={t('navigation.installApp')}
+              >
+                <Download className="h-3 w-3" />
+                <span>Instalar para móvil</span>
+              </button>
+            )}
+            
             <Link to="/blog" className="text-sm font-semibold text-gray-700 hover:text-leaf-green transition-colors">
               {t('navigation.blog')}
             </Link>
@@ -68,18 +93,6 @@ export function Header() {
             <button className="p-2 text-gray-600 hover:text-leaf-green transition-colors hidden md:block">
               <Search className="h-5 w-5" />
             </button>
-            
-            {/* PWA Install Button */}
-            {isInstallable && (
-              <button
-                onClick={handleInstall}
-                className="hidden md:flex items-center gap-2 px-4 py-2 bg-leaf-green text-white rounded-full text-sm font-bold hover:bg-dark-green transition-all shadow-md hover:shadow-lg"
-                title={t('navigation.installApp')}
-              >
-                <Download className="h-4 w-4" />
-                <span>{t('navigation.installApp')}</span>
-              </button>
-            )}
             
             <Link to="/cart" className="relative p-2 text-gray-600 hover:text-leaf-green transition-colors group">
               <ShoppingCart className="h-5 w-5" />
