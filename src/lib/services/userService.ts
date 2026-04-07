@@ -14,7 +14,20 @@ export const userService = {
     try {
       console.log('Fetching users from profiles table...');
       
-      // Try the admin view first (most efficient)
+      // Try the admin function first (most secure and efficient)
+      try {
+        const { data: adminFunctionData, error: adminFunctionError } = await supabase
+          .rpc('get_all_users_for_admin');
+
+        if (!adminFunctionError && adminFunctionData) {
+          console.log('Successfully fetched users from admin function:', adminFunctionData.length);
+          return adminFunctionData as User[];
+        }
+      } catch (functionError) {
+        console.log('Admin function not available, trying admin view...');
+      }
+
+      // Try the admin view next
       try {
         const { data: adminViewData, error: adminViewError } = await supabase
           .from('admin_users_view')
