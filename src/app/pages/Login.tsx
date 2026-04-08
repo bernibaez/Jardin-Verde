@@ -141,7 +141,7 @@ export function Login() {
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <input
                     type="text"
-                    placeholder="Juan Pérez"
+                    placeholder="Fulano de tal"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2D5128] focus:border-[#2D5128] outline-none transition-colors"

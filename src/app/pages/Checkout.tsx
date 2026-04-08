@@ -342,7 +342,7 @@ export function Checkout() {
                         className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D5128] focus:border-[#2D5128] transition-all ${
                           errors.fullName ? 'border-red-500 bg-red-50' : 'border-gray-200'
                         }`}
-                        placeholder="Juan Pérez"
+                        placeholder="Fulano de tal"
                       />
                     </div>
                     {errors.fullName && (
@@ -524,7 +524,7 @@ export function Checkout() {
                         name="cardName"
                         value={formData.cardName}
                         onChange={handleChange}
-                        placeholder="JUAN PÉREZ"
+                        placeholder="FULANO DE TAL"
                         required
                         className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D5128] focus:border-[#2D5128] transition-all ${
                           errors.cardName ? 'border-red-500 bg-red-50' : 'border-gray-200'
