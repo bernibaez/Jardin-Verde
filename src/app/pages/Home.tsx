@@ -100,12 +100,12 @@ export function Home() {
                 >
                   Ver Catálogo
                 </Link>
-                <button className="flex items-center gap-2 text-white font-bold hover:text-leaf-green transition-colors px-4">
+                <Link to="/about" className="flex items-center gap-2 text-white font-bold hover:text-leaf-green transition-colors px-4">
                   <div className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center">
                     <Search className="h-4 w-4" />
                   </div>
-                  Ver Proyectos
-                </button>
+                  Saber más de Jardín Verde
+                </Link>
                 {isInstallable && (
                   <button 
                     onClick={handleInstall}

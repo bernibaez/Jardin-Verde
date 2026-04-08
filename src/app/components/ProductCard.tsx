@@ -21,30 +21,33 @@ export function ProductCard({ product }: ProductCardProps) {
     <div className="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full">
       {/* Product Image */}
       <div className="aspect-square relative overflow-hidden bg-gray-50">
-        <ImageWithFallback
-          src={product.image}
-          alt={product.name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        <Link to={`/product/${product.id}`} className="block w-full h-full">
+          <ImageWithFallback
+            src={product.image}
+            alt={product.name}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        </Link>
         
         {/* Quick Actions Overlay */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-1 sm:gap-2">
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-1 sm:gap-2 pointer-events-none">
           <button
             onClick={handleAddToCart}
             disabled={product.stock === 0}
-            className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-[#2D5128] hover:bg-[#2D5128] hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-110"
+            className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-[#2D5128] hover:bg-[#2D5128] hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-110 pointer-events-auto"
             title="Agregar al carrito"
           >
             <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
           </button>
-          <button
-            className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-[#2D5128] hover:bg-[#2D5128] hover:text-white transition-all duration-300 transform hover:scale-110"
+          <Link
+            to={`/product/${product.id}`}
+            className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-[#2D5128] hover:bg-[#2D5128] hover:text-white transition-all duration-300 transform hover:scale-110 pointer-events-auto"
             title="Ver detalles"
           >
             <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
-          </button>
+          </Link>
           <button
-            className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-[#2D5128] hover:bg-[#2D5128] hover:text-white transition-all duration-300 transform hover:scale-110"
+            className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-[#2D5128] hover:bg-[#2D5128] hover:text-white transition-all duration-300 transform hover:scale-110 pointer-events-auto"
             title="Agregar a favoritos"
           >
             <Heart className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -83,9 +86,11 @@ export function ProductCard({ product }: ProductCardProps) {
       {/* Product Info */}
       <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
         <div>
-          <h3 className="text-xs sm:text-sm font-semibold text-gray-900 group-hover:text-[#2D5128] transition-colors duration-300 line-clamp-2">
-            {product.name}
-          </h3>
+          <Link to={`/product/${product.id}`}>
+            <h3 className="text-xs sm:text-sm font-semibold text-gray-900 group-hover:text-[#2D5128] transition-colors duration-300 line-clamp-2 hover:underline">
+              {product.name}
+            </h3>
+          </Link>
           
           <p className="text-xs text-gray-500 line-clamp-1 mt-1">
             {product.description}
