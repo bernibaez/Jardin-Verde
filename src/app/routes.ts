@@ -10,8 +10,6 @@ import { Login } from './pages/Login';
 import { Admin } from './pages/Admin';
 import { MyOrders } from './pages/MyOrders';
 import { Profile } from './pages/Profile';
-import { Blog } from './pages/Blog';
-import { BlogPost } from './pages/BlogPost';
 import { NotFound } from './pages/NotFound';
 
 export const router = createBrowserRouter([
@@ -28,8 +26,6 @@ export const router = createBrowserRouter([
       { path: 'admin', Component: Admin },
       { path: 'profile', Component: Profile },
       { path: 'my-orders', Component: MyOrders },
-      { path: 'blog', Component: Blog },
-      { path: 'blog/:slug', Component: BlogPost },
       { path: '*', Component: NotFound },
     ],
   },

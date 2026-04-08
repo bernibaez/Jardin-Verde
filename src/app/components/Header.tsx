@@ -103,9 +103,6 @@ export function Header() {
               </button>
             )}
             
-            <Link to="/blog" className="text-sm font-semibold text-gray-700 hover:text-leaf-green transition-colors">
-              {t('navigation.blog')}
-            </Link>
             <Link to="/about" className="text-sm font-semibold text-gray-700 hover:text-leaf-green transition-colors">
               {t('navigation.about')}
             </Link>

@@ -254,25 +254,34 @@ export function Home() {
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="relative">
-              <div className="rounded-[3rem] overflow-hidden shadow-2xl relative z-10 aspect-[3/4]">
-                <img src="https://images.unsplash.com/photo-1592150621344-82d67abb7963?auto=format&fit=crop&q=80&w=600" alt="Gardening" className="w-full h-full object-cover" />
+            <div className="relative flex justify-center">
+              <div className="rounded-[3rem] overflow-hidden shadow-2xl relative z-10 aspect-square w-full max-w-[400px]">
+                <img src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&q=80&w=800" alt="Jardín Sostenible" className="w-full h-full object-cover" />
               </div>
-              <div className="absolute -top-10 -left-10 w-40 h-40 bg-soft-green rounded-full -z-0"></div>
-              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-leaf-green rounded-3xl -z-0 rotate-12"></div>
+              <div className="absolute -top-6 -left-6 w-32 h-32 bg-soft-green rounded-full -z-0"></div>
+              <div className="absolute -bottom-4 -right-4 w-20 h-20 bg-leaf-green rounded-3xl -z-0 rotate-12"></div>
             </div>
 
             <div className="space-y-10">
               <div className="space-y-4">
                 <span className="text-leaf-green font-bold uppercase tracking-widest text-sm">Testimonios</span>
                 <h2 className="text-4xl md:text-5xl font-bold text-dark-green">Lo que dicen nuestros clientes</h2>
-                <p className="text-lg text-gray-600 italic leading-relaxed">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-leaf-green shadow-md">
+                    <img 
+                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200" 
+                      alt="Elena Rodríguez" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <p className="font-bold text-dark-green text-lg">Elena Rodríguez</p>
+                    <p className="text-gray-500 text-sm">Arquitecta de Interiores</p>
+                  </div>
+                </div>
+                <p className="text-xl text-gray-600 italic leading-relaxed bg-soft-green/30 p-6 rounded-2xl border-l-4 border-leaf-green">
                   "El equipo de Jardín Verde transformó mi balcón en un pequeño paraíso. No solo se ve increíble, sino que el sistema de riego automático me ha facilitado la vida enormemente."
                 </p>
-                <div className="pt-4">
-                  <p className="font-bold text-dark-green">Elena Rodríguez</p>
-                  <p className="text-gray-500">Arquitecta de Interiores</p>
-                </div>
               </div>
 
               <div className="space-y-6 pt-10 border-t border-gray-100">

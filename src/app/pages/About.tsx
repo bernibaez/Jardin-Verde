@@ -1,6 +1,53 @@
-import { Sprout, Heart, Award, Users, Leaf, TreePine } from 'lucide-react';
+import { Sprout, Heart, Award, Users, Leaf, TreePine, ChevronLeft, ChevronRight } from 'lucide-react';
+import useEmblaCarousel from 'embla-carousel-react';
+import { useCallback } from 'react';
 
 export function About() {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ 
+    loop: true,
+    align: 'start',
+    slidesToScroll: 1,
+    breakpoints: {
+      '(min-width: 768px)': { slidesToScroll: 2 },
+      '(min-width: 1024px)': { slidesToScroll: 3 }
+    }
+  });
+
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
+
+  const teamMembers = [
+    {
+      name: "Berny Josias Baez Peña",
+      id: "2023-0046",
+      role: "Director Ejecutivo",
+      description: "Visionario líder con pasión por la innovación en el paisajismo sostenible y la gestión ambiental."
+    },
+    {
+      name: "David Rafael Parra Fernández",
+      id: "2021-0052",
+      role: "Director de Operaciones",
+      description: "Experto en optimización de procesos y logística para asegurar la mejor calidad en cada entrega."
+    },
+    {
+      name: "Sebastian A. Ponce",
+      id: "2021-0220",
+      role: "Arquitecto de Paisaje",
+      description: "Especialista en el diseño de espacios que armonizan la estética moderna con la biodiversidad local."
+    },
+    {
+      name: "Frank Felix de la Rosa Galva",
+      id: "2021-0212",
+      role: "Especialista en Horticultura",
+      description: "Dedicado a la investigación y cuidado de especies exóticas y nativas para nuestros jardines."
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -133,47 +180,71 @@ export function About() {
         </div>
       </section>
 
-      {/* Team */}
-      <section className="py-20 bg-white">
+      {/* Team Section with Carousel */}
+      <section className="py-24 bg-gradient-to-b from-white to-green-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom duration-700">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Nuestro Equipo</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Expertos apasionados que aman las plantas tanto como tú
+          <div className="text-center mb-16 max-w-3xl mx-auto">
+            <span className="text-green-600 font-bold uppercase tracking-widest text-sm mb-4 block">Nuestro Equipo</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Mentes Maestras Detrás de lo Verde</h2>
+            <p className="text-xl text-gray-600">
+              Expertos apasionados que combinan ciencia, diseño y tecnología para crear el jardín de tus sueños.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {[
-              {
-                name: "María González",
-                role: "Fundadora & Horticultora Experta",
-                description: "Con más de 15 años de experiencia en horticultura y un amor inmenso por las plantas tropicales."
-              },
-              {
-                name: "Carlos Rodríguez",
-                role: "Experto en Jardinería Interior",
-                description: "Especializado en diseño de espacios interiores y selección de plantas para cada ambiente."
-              },
-              {
-                name: "Ana Martínez",
-                role: "Gerente de Servicio al Cliente",
-                description: "Apasionada por ayudar a nuestros clientes a encontrar la planta perfecta para su hogar."
-              }
-            ].map((member, index) => (
-              <div 
-                key={index} 
-                className="text-center p-8 bg-gray-50 rounded-2xl hover:bg-white hover:shadow-xl transition-all duration-500 hover:-translate-y-2 animate-in fade-in slide-in-from-bottom duration-700"
-                style={{ animationDelay: `${index * 150}ms` }}
-              >
-                <div className="w-24 h-24 bg-green-200 rounded-full mx-auto mb-6 flex items-center justify-center">
-                  <Users className="h-12 w-12 text-green-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{member.name}</h3>
-                <p className="text-green-600 font-medium mb-3">{member.role}</p>
-                <p className="text-gray-600 text-sm leading-relaxed">{member.description}</p>
+          <div className="relative max-w-6xl mx-auto px-12">
+            <div className="overflow-hidden" ref={emblaRef}>
+              <div className="flex">
+                {teamMembers.map((member, index) => (
+                  <div key={index} className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_33.33%] pl-4 first:pl-0">
+                    <div className="h-full p-8 bg-white rounded-3xl shadow-sm border border-green-50 hover:shadow-xl transition-all duration-500 group relative overflow-hidden">
+                      {/* Decorative Background */}
+                      <div className="absolute -right-4 -top-4 w-24 h-24 bg-green-50 rounded-full group-hover:bg-green-100 transition-colors duration-500"></div>
+                      
+                      <div className="relative z-10">
+                        <div className="w-24 h-24 bg-green-600 rounded-2xl mx-auto mb-8 flex items-center justify-center transform rotate-3 group-hover:rotate-6 transition-transform shadow-lg shadow-green-200">
+                          <Users className="h-12 w-12 text-white" />
+                        </div>
+                        
+                        <div className="text-center space-y-4">
+                          <div className="space-y-1">
+                            <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors">
+                              {member.name}
+                            </h3>
+                            <div className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold uppercase tracking-wider">
+                              ID: {member.id}
+                            </div>
+                          </div>
+                          
+                          <p className="text-green-600 font-semibold text-sm">
+                            {member.role}
+                          </p>
+                          
+                          <p className="text-gray-600 text-sm leading-relaxed border-t border-gray-100 pt-4">
+                            {member.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* Navigation Buttons */}
+            <button 
+              onClick={scrollPrev}
+              className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-green-600 hover:bg-green-600 hover:text-white transition-all z-20 border border-green-100"
+              aria-label="Anterior"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+            <button 
+              onClick={scrollNext}
+              className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-green-600 hover:bg-green-600 hover:text-white transition-all z-20 border border-green-100"
+              aria-label="Siguiente"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
           </div>
         </div>
       </section>

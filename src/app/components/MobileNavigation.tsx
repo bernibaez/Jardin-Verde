@@ -39,7 +39,6 @@ export function MobileNavigation() {
     { path: '/', icon: Home, label: t('navigation.home'), active: location.pathname === '/' },
     { path: '/products', icon: ShoppingBag, label: t('navigation.products'), active: location.pathname === '/products' },
     { path: isAuthenticated ? '/my-orders' : '/login', icon: ShoppingBag, label: t('navigation.orders'), active: location.pathname === '/my-orders' },
-    { path: '/blog', icon: FileText, label: t('navigation.blog'), active: location.pathname === '/blog' },
   ];
 
   return (
