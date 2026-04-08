@@ -10,12 +10,12 @@ interface InstallInstructionsProps {
 export function InstallInstructions({ onClose, isAndroid = false, onInstall }: InstallInstructionsProps) {
   useEffect(() => {
     console.log('InstallInstructions component mounted, isAndroid:', isAndroid);
-    // Prevent body scroll when modal is open
-    document.body.style.overflow = 'hidden';
+    // Prevent body scroll when modal is open using classList
+    document.body.classList.add('modal-open');
     
     return () => {
       console.log('InstallInstructions component unmounted');
-      document.body.style.overflow = 'unset';
+      document.body.classList.remove('modal-open');
     };
   }, [isAndroid]);
 

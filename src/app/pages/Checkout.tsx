@@ -611,12 +611,12 @@ export function Checkout() {
               {isProcessing ? (
                 <>
                   <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
-                  Procesando Pago...
+                  <span>Procesando Pago...</span>
                 </>
               ) : (
                 <>
                   <Lock className="h-4 w-4 sm:h-5 sm:w-5" />
-                  Pagar ${totalPrice.toFixed(2)}
+                  <span>Pagar ${totalPrice.toFixed(2)}</span>
                 </>
               )}
             </button>

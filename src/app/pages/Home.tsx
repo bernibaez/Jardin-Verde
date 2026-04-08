@@ -48,7 +48,7 @@ export function Home() {
   const [loading, setLoading] = useState(false);
 
   const handleInstall = async () => {
-    // Check if running on iOS or Android
+    // verificar si el dispositivo es de ios o android
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const isAndroid = /Android/.test(navigator.userAgent);
     
@@ -267,12 +267,10 @@ export function Home() {
                 <span className="text-leaf-green font-bold uppercase tracking-widest text-sm">Testimonios</span>
                 <h2 className="text-4xl md:text-5xl font-bold text-dark-green">Lo que dicen nuestros clientes</h2>
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-leaf-green shadow-md">
-                    <img 
-                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200" 
-                      alt="Elena Rodríguez" 
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="w-16 h-16 rounded-full bg-leaf-green flex items-center justify-center border-2 border-leaf-green shadow-md">
+                    <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
                   </div>
                   <div>
                     <p className="font-bold text-dark-green text-lg">Elena Rodríguez</p>
@@ -280,7 +278,7 @@ export function Home() {
                   </div>
                 </div>
                 <p className="text-xl text-gray-600 italic leading-relaxed bg-soft-green/30 p-6 rounded-2xl border-l-4 border-leaf-green">
-                  "El equipo de Jardín Verde transformó mi balcón en un pequeño paraíso. No solo se ve increíble, sino que el sistema de riego automático me ha facilitado la vida enormemente."
+                  "El equipo de Jardín Verde transformó mi balcón en un pequeño paraíso. No solo se ve increíble, sino que el sistema de riego automático me ha facilitado la vida enormemente. Son los mejores articulos de jardineria que he tenido jamas."
                 </p>
               </div>
 

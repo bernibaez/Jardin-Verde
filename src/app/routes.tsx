@@ -11,11 +11,13 @@ import { Admin } from './pages/Admin';
 import { MyOrders } from './pages/MyOrders';
 import { Profile } from './pages/Profile';
 import { NotFound } from './pages/NotFound';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 export const router = createBrowserRouter([
   {
     path: '/',
     Component: Layout,
+    errorElement: <ErrorBoundary />,
     children: [
       { index: true, Component: Home },
       { path: 'about', Component: About },

@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS profiles (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+
+
 -- 2. Eliminar políticas existentes y recrearlas correctamente
 DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
 DROP POLICY IF EXISTS "Admins can view all profiles" ON profiles;
@@ -95,5 +97,47 @@ GRANT SELECT ON admin_users_view TO service_role;
 -- 10. Crear primer administrador (descomenta y reemplaza el UUID)
 -- UPDATE profiles SET role = 'admin' WHERE id = 'REEMPLAZAR_CON_UUID_DEL_ADMIN';
 
--- 11. Verificar configuración
+-- 11. Crear vista para detalles de pedidos con nombre del cliente
+CREATE OR REPLACE VIEW admin_order_details_view AS
+SELECT 
+  o.id as order_id,
+  o.user_id,
+  p.name as customer_name,
+  u.email as customer_email,
+  o.status,
+  o.total,
+  o.shipping_address,
+  o.created_at as order_date,
+  o.updated_at as last_updated,
+  -- Detalles de items del pedido
+  json_agg(
+    json_build_object(
+      'product_id', oi.product_id,
+      'product_name', pr.name,
+      'quantity', oi.quantity,
+      'price', oi.price,
+      'subtotal', oi.quantity * oi.price
+    )
+  ) as items
+FROM orders o
+JOIN profiles p ON o.user_id = p.id
+JOIN auth.users u ON p.id = u.id
+LEFT JOIN order_items oi ON o.id = oi.order_id
+LEFT JOIN products pr ON oi.product_id = pr.id
+GROUP BY o.id, o.user_id, p.name, u.email, o.status, o.total, o.shipping_address, o.created_at, o.updated_at;
+
+-- 12. Políticas para la vista de detalles de pedidos
+DROP POLICY IF EXISTS "Admin order details policy" ON admin_order_details_view;
+CREATE POLICY "Admin order details policy" ON admin_order_details_view FOR SELECT USING (
+  EXISTS (
+    SELECT 1 FROM profiles 
+    WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+  )
+);
+
+-- 13. Dar permisos necesarios para la vista de pedidos
+GRANT SELECT ON admin_order_details_view TO authenticated;
+GRANT SELECT ON admin_order_details_view TO service_role;
+
+-- 14. Verificar configuración
 SELECT 'Policies configured successfully' as status;
