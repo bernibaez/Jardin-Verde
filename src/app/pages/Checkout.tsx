@@ -390,7 +390,7 @@ export function Checkout() {
                         className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D5128] focus:border-[#2D5128] transition-all ${
                           errors.phone ? 'border-red-500 bg-red-50' : 'border-gray-200'
                         }`}
-                        placeholder="+34 600 000 000"
+                        placeholder="+1 829 987 8357"
                       />
                     </div>
                     {errors.phone && (
@@ -439,7 +439,7 @@ export function Checkout() {
                         className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D5128] focus:border-[#2D5128] transition-all ${
                           errors.city ? 'border-red-500 bg-red-50' : 'border-gray-200'
                         }`}
-                        placeholder="Madrid"
+                        placeholder="Republica Dominicana"
                       />
                     </div>
                     {errors.city && (
