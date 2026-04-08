@@ -1,6 +1,7 @@
 import { Sprout, Heart, Award, Users, Leaf, TreePine, ChevronLeft, ChevronRight } from 'lucide-react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { useCallback } from 'react';
+import { Link } from 'react-router';
 
 export function About() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ 
@@ -50,130 +51,177 @@ export function About() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-green-50 to-white overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center animate-in fade-in slide-in-from-bottom duration-1000">
-            <div className="flex justify-center mb-6">
-              <div className="w-20 h-20 bg-green-600 rounded-2xl flex items-center justify-center animate-bounce">
-                <Sprout className="h-10 w-10 text-white" />
+      {/* Hero Section with Parallax-like effect */}
+      <section className="relative py-32 bg-white overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-green-50/50 -skew-x-12 transform origin-top"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-16">
+            <div className="lg:w-1/2 space-y-8 animate-in fade-in slide-in-from-left duration-1000">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-bold tracking-wide uppercase">
+                <Leaf className="h-4 w-4" />
+                Nuestra Historia
+              </div>
+              <h1 className="text-5xl lg:text-7xl font-black text-gray-900 leading-[1.1]">
+                Pasión por la <br />
+                <span className="text-green-600">Jardinería</span> Profesional
+              </h1>
+              <p className="text-xl text-gray-600 leading-relaxed">
+                En Jardín Verde, nos dedicamos a equiparte con las mejores herramientas y suministros. 
+                Desde 2020, hemos transformado miles de hogares y oficinas proporcionando artículos 
+                de jardinería de alta calidad para que crees tu propio oasis de paz y bienestar.
+              </p>
+              <div className="flex flex-wrap gap-4 pt-4">
+                <div className="flex items-center gap-3 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                  <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center text-white">
+                    <Award className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Expertos en</p>
+                    <p className="font-bold text-gray-900">Suministros de Jardín</p>
+                  </div>
+                </div>
               </div>
             </div>
-            <h1 className="text-5xl font-bold text-gray-900 mb-6">
-              Sobre <span className="text-green-600">Jardín Verde</span>
-            </h1>
-            <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
-              Somos una tienda apasionada por llevar la belleza de la naturaleza a tu hogar. 
-              Desde 2020, nos hemos dedicado a ofrecer las más altas quality plantas de interior 
-              y el mejor servicio a nuestros clientes.
-            </p>
+            <div className="lg:w-1/2 relative animate-in fade-in slide-in-from-right duration-1000 delay-300">
+              <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-2xl aspect-square">
+                <img 
+                  src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&q=80&w=800" 
+                  alt="Vivero Jardín Verde" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-green-600 rounded-full -z-0 opacity-20 blur-3xl"></div>
+              <div className="absolute top-1/2 -right-8 w-16 h-16 bg-yellow-400 rounded-2xl -z-0 rotate-12 shadow-xl flex items-center justify-center">
+                <Sprout className="h-8 w-8 text-white" />
+              </div>
+            </div>
           </div>
-        </div>
-        
-        {/* Decorative Elements */}
-        <div className="absolute top-10 left-10 text-green-200 animate-pulse">
-          <Leaf className="h-20 w-20" />
-        </div>
-        <div className="absolute bottom-10 right-10 text-green-200 animate-pulse delay-1000">
-          <TreePine className="h-24 w-24" />
         </div>
       </section>
 
-      {/* Mission & Vision */}
-      <section className="py-20 bg-white">
+      {/* Mission & Vision - Reimagined with modern cards */}
+      <section className="py-32 bg-gray-50/50 relative">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-            <div className="space-y-6 animate-in fade-in slide-in-from-left duration-1000">
-              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-4">
-                <Heart className="h-8 w-8 text-green-600" />
+          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            <div className="group bg-white p-12 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all duration-700 relative overflow-hidden border border-gray-100">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-bl-[100%] transition-all group-hover:scale-110"></div>
+              <div className="relative z-10 space-y-6">
+                <div className="w-20 h-20 bg-green-600 rounded-3xl flex items-center justify-center text-white transform rotate-6 group-hover:rotate-12 transition-transform shadow-lg shadow-green-200">
+                  <Heart className="h-10 w-10" />
+                </div>
+                <h2 className="text-4xl font-bold text-gray-900">Nuestra Misión</h2>
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  Equipar a cada entusiasta de lo verde con herramientas y suministros de la más alta calidad, 
+                  facilitando la creación y el mantenimiento de espacios naturales que promuevan 
+                  el bienestar en el entorno cotidiano.
+                </p>
               </div>
-              <h2 className="text-3xl font-bold text-gray-900">Nuestra Misión</h2>
-              <p className="text-gray-600 leading-relaxed">
-                Transformar espacios urbanos en oasis naturales proporcionando plantas de interior 
-                de la más alta calidad, promoviendo el bienestar y la conexión con la naturaleza 
-                en el entorno cotidiano de nuestros clientes.
-              </p>
             </div>
             
-            <div className="space-y-6 animate-in fade-in slide-in-from-right duration-1000 delay-200">
-              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-4">
-                <Award className="h-8 w-8 text-green-600" />
+            <div className="group bg-dark-green p-12 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all duration-700 relative overflow-hidden text-white">
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-tr-[100%] transition-all group-hover:scale-110"></div>
+              <div className="relative z-10 space-y-6">
+                <div className="w-20 h-20 bg-leaf-green rounded-3xl flex items-center justify-center text-white transform -rotate-6 group-hover:-rotate-12 transition-transform shadow-lg shadow-black/20">
+                  <Award className="h-10 w-10" />
+                </div>
+                <h2 className="text-4xl font-bold">Nuestra Visión</h2>
+                <p className="text-lg opacity-90 leading-relaxed">
+                  Ser el referente nacional en la provisión de artículos de jardinería, 
+                  destacándonos por nuestro catálogo innovador, asesoría técnica experta y 
+                  un compromiso inquebrantable con la sostenibilidad.
+                </p>
               </div>
-              <h2 className="text-3xl font-bold text-gray-900">Nuestra Visión</h2>
-              <p className="text-gray-600 leading-relaxed">
-                Ser la tienda de plantas de interior más confiable y reconocida del país, 
-                destacándonos por nuestra calidad excepcional, servicio personalizado y 
-                compromiso con la sostenibilidad ambiental.
-              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Values */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom duration-700">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Nuestros Valores</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Los principios que guían cada una de nuestras acciones
-            </p>
+      {/* Nature/Gardening Focused Values Section */}
+      <section className="py-32 bg-stone-50 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 opacity-5 rotate-45 pointer-events-none">
+          <Leaf className="w-96 h-96 text-green-800" />
+        </div>
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 opacity-[0.03] -rotate-12 pointer-events-none">
+          <TreePine className="w-96 h-96 text-green-900" />
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-24">
+            <div className="flex items-center justify-center gap-4 mb-4">
+               <span className="w-16 h-px bg-green-200"></span>
+               <span className="text-green-700 font-bold uppercase tracking-widest text-sm flex items-center gap-2">
+                 <Sprout className="w-5 h-5"/> Nuestros Pilares
+               </span>
+               <span className="w-16 h-px bg-green-200"></span>
+            </div>
+            <h2 className="text-5xl font-black text-gray-900 font-serif">Lo que nos Define</h2>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
             {[
               {
-                icon: Leaf,
-                title: "Calidad",
-                description: "Seleccionamos cuidadosamente cada planta para garantizar la más alta calidad y salud.",
-                delay: "0ms"
+                icon: Award,
+                title: "Calidad Suprema",
+                description: "Cada herramienta y producto es probado para garantizar durabilidad y eficiencia en tu jardín.",
+                color: "bg-emerald-100 text-emerald-700",
+                borderColor: "group-hover:border-emerald-300"
               },
               {
                 icon: Heart,
-                title: "Pasión",
-                description: "Amamos lo que hacemos y nos apasiona compartir la belleza de las plantas.",
-                delay: "150ms"
+                title: "Pasión Real",
+                description: "Amamos la jardinería y compartimos ese conocimiento para que logres resultados profesionales.",
+                color: "bg-lime-100 text-lime-700",
+                borderColor: "group-hover:border-lime-300"
               },
               {
                 icon: Users,
-                title: "Servicio",
-                description: "Ofrecemos atención personalizada y asesoramiento experto a cada cliente.",
-                delay: "300ms"
+                title: "Comunidad",
+                description: "Acompañamos a nuestros clientes con asesoría técnica en el uso de cada artículo.",
+                color: "bg-teal-100 text-teal-700",
+                borderColor: "group-hover:border-teal-300"
               }
             ].map((value, index) => (
               <div 
                 key={index} 
-                className="text-center p-8 bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 animate-in fade-in slide-in-from-bottom duration-700"
-                style={{ animationDelay: value.delay }}
+                className={`group p-10 bg-white rounded-t-full rounded-b-[2.5rem] border-2 border-transparent ${value.borderColor} shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-4 relative`}
               >
-                <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-green-200 transition-colors">
-                  <value.icon className="h-8 w-8 text-green-600" />
+                {/* Top sprout decorative accent */}
+                <div className="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-500">
+                  <Leaf className={`w-8 h-8 ${value.color.replace('bg-', 'text-').split(' ')[0]}`} />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">{value.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{value.description}</p>
+                
+                <div className={`w-28 h-28 mx-auto ${value.color} rounded-full flex items-center justify-center mb-8 transform group-hover:scale-110 transition-transform duration-500 shadow-inner overflow-hidden relative`}>
+                  <div className="absolute inset-0 bg-white/30 backdrop-blur-sm -translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                  <value.icon className="h-12 w-12 relative z-10" />
+                </div>
+                <div className="text-center relative z-10">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">{value.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{value.description}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="py-20 bg-green-600 text-white">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 text-center">
+      {/* Modern Stats Section */}
+      <section className="py-32 bg-dark-green relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-leaf-green rounded-full translate-x-1/2 translate-y-1/2 blur-3xl"></div>
+        </div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid md:grid-cols-4 gap-12 text-center">
             {[
-              { number: "10,000+", label: "Clientes Felices" },
-              { number: "50+", label: "Variedades de Plantas" },
-              { number: "5", label: "Años de Experiencia" },
-              { number: "98%", label: "Satisfacción" }
+              { number: "10K+", label: "Clientes Satisfechos" },
+              { number: "500+", label: "Artículos de Calidad" },
+              { number: "5+", label: "Años de Trayectoria" },
+              { number: "100%", label: "Garantía" }
             ].map((stat, index) => (
-              <div 
-                key={index} 
-                className="space-y-2 animate-in fade-in slide-in-from-bottom duration-700"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="text-4xl font-bold">{stat.number}</div>
-                <div className="text-green-100">{stat.label}</div>
+              <div key={index} className="space-y-4">
+                <div className="text-6xl font-black text-white">{stat.number}</div>
+                <div className="text-leaf-green font-bold uppercase tracking-widest text-sm">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -254,18 +302,21 @@ export function About() {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom duration-1000">
             <h2 className="text-4xl font-bold text-gray-900">
-              ¿Listo para transformar tu espacio?
+              ¿Listo para equipar tu jardín?
             </h2>
             <p className="text-xl text-gray-600">
-              Descubre nuestra colección de plantas premium y deja que nuestros expertos te guíen 
-              en la elección perfecta para tu hogar u oficina.
+              Descubre nuestra amplia gama de suministros y deja que nuestros expertos te asesoren 
+              en la elección de las mejores herramientas para tu proyecto.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <button className="bg-green-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-green-700 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-200">
+              <Link 
+                to="/products"
+                className="bg-green-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-green-700 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-200"
+              >
                 Ver Catálogo
-              </button>
+              </Link>
               <button className="border border-green-600 text-green-600 px-8 py-3 rounded-lg font-medium hover:bg-green-50 transition-all duration-300 hover:scale-105 hover:shadow-lg">
-                Contactar Expertos
+                Asesoría Técnica
               </button>
             </div>
           </div>
