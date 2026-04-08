@@ -366,7 +366,7 @@ export function Checkout() {
                         className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D5128] focus:border-[#2D5128] transition-all ${
                           errors.email ? 'border-red-500 bg-red-50' : 'border-gray-200'
                         }`}
-                        placeholder="juan@ejemplo.com"
+                        placeholder="fulano@gmail.com"
                       />
                     </div>
                     {errors.email && (
