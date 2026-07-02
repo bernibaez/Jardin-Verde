@@ -87,7 +87,7 @@ export function Home() {
             <div className="lg:col-span-7 text-white space-y-8">
               <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.1]">
                 Diseño de Paisajismo <br />
-                <span className="text-leaf-green">Sostenible</span>
+                <span className="text-leaf-green"></span>
               </h1>
               <p className="text-lg md:text-xl text-gray-100 max-w-xl leading-relaxed">
                 Transformamos tu espacio exterior en un ecosistema vibrante y ecológico. 

@@ -66,7 +66,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
             <span className={`text-xs font-medium px-2 py-1 rounded-full ${
               product.stock > 0 
-                ? 'bg-green-500 text-white' 
+                ? 'bg-[#2D5128] text-white' 
                 : 'bg-red-500 text-white'
             }`}>
               {product.stock > 0 ? `${product.stock} en stock` : 'Agotado'}

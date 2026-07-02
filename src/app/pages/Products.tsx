@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { ProductCard } from '../components/ProductCard';
 import { SearchBar } from '../components/SearchBar';
-import { productService } from '../../lib/services/productService';
 import { Product } from '../context/CartContext';
 import { Filter, Loader2, Package, Grid, List, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
+import { getProducts } from '../data/mockProducts';
 
 export function Products() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -15,9 +15,9 @@ export function Products() {
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProducts = () => {
       try {
-        const data = await productService.getProducts();
+        const data = getProducts();
         setProducts(data);
       } catch (error) {
         console.error('Error fetching products:', error);

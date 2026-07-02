@@ -199,7 +199,7 @@ export function Cart() {
                       <Truck className="h-4 w-4" />
                       Envío
                     </span>
-                    <span className={`font-medium ${shippingCost === 0 ? 'text-green-600' : ''}`}>
+                    <span className={`font-medium ${shippingCost === 0 ? 'text-[#2D5128]' : ''}`}>
                       {shippingCost === 0 ? 'GRATIS' : `$${shippingCost.toFixed(2)}`}
                     </span>
                   </div>

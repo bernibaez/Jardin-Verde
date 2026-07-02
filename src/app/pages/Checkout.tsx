@@ -211,22 +211,22 @@ export function Checkout() {
           <div className="mx-auto max-w-2xl text-center">
             <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12">
               <div className="relative mb-8">
-                <div className="absolute inset-0 bg-green-100 rounded-full blur-2xl"></div>
-                <CheckCircle className="relative mx-auto h-24 w-24 text-green-600 animate-bounce" />
+                <div className="absolute inset-0 bg-[#e8f0e8] rounded-full blur-2xl"></div>
+                <CheckCircle className="relative mx-auto h-24 w-24 text-[#2D5128] animate-bounce" />
               </div>
-              <h1 className="mb-4 text-4xl font-bold text-green-800">¡Pago Procesado con Éxito!</h1>
+              <h1 className="mb-4 text-4xl font-bold text-[#2D5128]">¡Pago Procesado con Éxito!</h1>
               <p className="mb-6 text-gray-600 text-lg">
                 Tu pedido ha sido procesado exitosamente. Recibirás un email de confirmación en breve.
               </p>
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-6 mb-8">
+              <div className="bg-gradient-to-r from-[#e8f0e8] to-[#f0f4e6] border border-[#2D5128]/20 rounded-2xl p-6 mb-8">
                 <div className="flex items-center justify-center gap-3 mb-3">
-                  <Truck className="h-6 w-6 text-green-600" />
-                  <span className="text-green-700 font-bold text-lg">Pedido en camino</span>
+                  <Truck className="h-6 w-6 text-[#2D5128]" />
+                  <span className="text-[#2D5128] font-bold text-lg">Pedido en camino</span>
                 </div>
-                <p className="text-green-600">
+                <p className="text-[#2D5128]">
                   Tu pedido llegará en 24-48 horas hábiles
                 </p>
-                <p className="text-green-700 font-medium mt-3">
+                <p className="text-[#2D5128] font-medium mt-3">
                   ¡Gracias por confiar en Jardín Verde! 🌿
                 </p>
               </div>
@@ -645,7 +645,7 @@ export function Checkout() {
                         <p className="font-bold text-lg text-gray-900">{user.name}</p>
                         <p className="text-sm text-gray-600">{user.email}</p>
                         <div className="flex items-center gap-1 mt-1">
-                          <div className={`w-2 h-2 rounded-full ${user.role === 'admin' ? 'bg-purple-500' : 'bg-green-500'}`}></div>
+                          <div className={`w-2 h-2 rounded-full ${user.role === 'admin' ? 'bg-purple-500' : 'bg-[#2D5128]'}`}></div>
                           <span className="text-xs text-gray-500 capitalize">{user.role === 'admin' ? 'Administrador' : 'Cliente'}</span>
                         </div>
                       </div>
@@ -691,7 +691,7 @@ export function Checkout() {
                       <Truck className="h-4 w-4" />
                       Envío
                     </span>
-                    <span className="font-medium text-green-600">Gratis</span>
+                    <span className="font-medium text-[#2D5128]">Gratis</span>
                   </div>
                   <div className="border-t pt-3">
                     <div className="flex justify-between text-xl font-bold">
